@@ -185,22 +185,25 @@ export function Trajectory() {
   const path = useRef<SVGPathElement>(null);
   const ball = useRef<SVGCircleElement>(null);
   useEffect(() => {
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches || !path.current || !ball.current) return;
-    const len = path.current.getTotalLength();
-    let raf = 0, t0 = 0;
+    const arc = path.current, dot = ball.current;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches || !arc || !dot) return;
+    const len = arc.getTotalLength();
+    let raf = 0, t0 = 0, stopped = false;
     const loop = (t: number) => {
+      // refs are nulled on unmount (e.g. HMR / route change) before a queued frame can run
+      if (stopped || !arc.isConnected) return;
       t0 ||= t;
       const p = ((t - t0) % 3600) / 3000;
       if (p <= 1) {
-        const pt = path.current!.getPointAtLength(len * p);
-        ball.current!.setAttribute("cx", String(pt.x));
-        ball.current!.setAttribute("cy", String(pt.y));
-        ball.current!.style.opacity = "1";
-      } else ball.current!.style.opacity = "0";
+        const pt = arc.getPointAtLength(len * p);
+        dot.setAttribute("cx", String(pt.x));
+        dot.setAttribute("cy", String(pt.y));
+        dot.style.opacity = "1";
+      } else dot.style.opacity = "0";
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
+    return () => { stopped = true; cancelAnimationFrame(raf); };
   }, []);
   return (
     <svg className="trajectory" viewBox="0 0 600 140" preserveAspectRatio="none" aria-hidden="true">
