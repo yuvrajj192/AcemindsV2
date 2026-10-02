@@ -181,34 +181,17 @@ export function HeroSlider() {
 }
 
 /* ---------- Hero projectile doodle ---------- */
+// Pure SVG animation (no JS loop): the ball flies the arc in 3s, then hides for 0.6s and repeats.
 export function Trajectory() {
-  const path = useRef<SVGPathElement>(null);
-  const ball = useRef<SVGCircleElement>(null);
-  useEffect(() => {
-    const arc = path.current, dot = ball.current;
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches || !arc || !dot) return;
-    const len = arc.getTotalLength();
-    let raf = 0, t0 = 0, stopped = false;
-    const loop = (t: number) => {
-      // refs are nulled on unmount (e.g. HMR / route change) before a queued frame can run
-      if (stopped || !arc.isConnected) return;
-      t0 ||= t;
-      const p = ((t - t0) % 3600) / 3000;
-      if (p <= 1) {
-        const pt = arc.getPointAtLength(len * p);
-        dot.setAttribute("cx", String(pt.x));
-        dot.setAttribute("cy", String(pt.y));
-        dot.style.opacity = "1";
-      } else dot.style.opacity = "0";
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-    return () => { stopped = true; cancelAnimationFrame(raf); };
-  }, []);
   return (
     <svg className="trajectory" viewBox="0 0 600 140" preserveAspectRatio="none" aria-hidden="true">
-      <path ref={path} className="arc" d="M10 135 Q 300 -120 590 135" />
-      <circle ref={ball} className="ball" r="8" cx="10" cy="135" />
+      <path id="hero-arc" className="arc" d="M10 135 Q 300 -120 590 135" />
+      <circle className="ball" r="8">
+        <animateMotion dur="3.6s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.833;1" calcMode="linear">
+          <mpath href="#hero-arc" />
+        </animateMotion>
+        <animate attributeName="opacity" dur="3.6s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.83;0.84;1" />
+      </circle>
     </svg>
   );
 }

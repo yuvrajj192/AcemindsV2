@@ -1023,3 +1023,4 @@ body.lock { overflow: hidden; }
 .tick-list li { display: flex; gap: 10px; }
 .tick-list li::before { content: "✦"; color: var(--gold-400); }
 .nowrap { white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .trajectory .ball { display: none; } }
