@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { ACE } from "@/lib/data";
 import { FacultyCard } from "@/components/Cards";
 import { Reveal } from "@/components/Reveal";
 import { CtaBand, PageHero, SectionHead } from "@/components/Sections";
+import { getFaculty } from "@/lib/queries";
 
 export const metadata: Metadata = {
   title: "Faculty · IIT, NIT & AIIMS Alumni Mentors",
   description: "Meet the Ace Minds faculty — IIT, NIT and AIIMS alumni led by Deepak Rana Sir (Physics, IIT Bombay).",
 };
 
-export default function FacultyPage() {
+export default async function FacultyPage() {
+  const faculty = await getFaculty();
   return (
     <>
       <PageHero crumb="Faculty" title={<>Mentors who <span className="gold">cracked it first</span></>} text="Every core subject at Ace Minds is taught by alumni of India's top institutes — people who know the exam from the inside." big="IIT" hand="an alumni initiative" />
@@ -36,7 +37,7 @@ export default function FacultyPage() {
       <section className="section section-cream">
         <div className="container">
           <SectionHead eyebrow="The team" title={<>Our <span className="tag">faculty</span></>} />
-          <Reveal stagger className="faculty-grid">{ACE.faculty.map((f) => <FacultyCard key={f.name} f={f} />)}</Reveal>
+          <Reveal stagger className="faculty-grid">{faculty.map((f) => <FacultyCard key={f.name} f={f} />)}</Reveal>
         </div>
       </section>
       <CtaBand />

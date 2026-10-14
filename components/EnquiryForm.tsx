@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { ACE } from "@/lib/data";
+import type { Course } from "@/lib/types";
 import { Icon } from "./Icons";
 
 /* Frontend-only: validates, then keeps the enquiry in localStorage
@@ -9,9 +9,9 @@ import { Icon } from "./Icons";
    replace the marked block with a POST to /api/enquiries (admin + email
    alert + Excel export live there). */
 
-type Props = { id: string; full?: boolean; cta?: string; source?: string; defaultCourse?: string };
+type Props = { id: string; full?: boolean; cta?: string; source?: string; defaultCourse?: string; courses: Course[] };
 
-export function EnquiryForm({ id, full, cta = "Book my free demo class", source = "site", defaultCourse = "" }: Props) {
+export function EnquiryForm({ id, full, cta = "Book my free demo class", source = "site", defaultCourse = "", courses }: Props) {
   const [sent, setSent] = useState(false);
   const [invalid, setInvalid] = useState<Record<string, boolean>>({});
 
@@ -81,7 +81,7 @@ export function EnquiryForm({ id, full, cta = "Book my free demo class", source 
           <label htmlFor={`${id}-course`}>Interested in</label>
           <select id={`${id}-course`} name="course" defaultValue={defaultCourse}>
             <option value="">Choose a course</option>
-            {ACE.courses.map((c) => <option key={c.title}>{c.title}</option>)}
+            {courses.map((c) => <option key={c.title}>{c.title}</option>)}
           </select>
         </div>
         {full && (

@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { ACE } from "@/lib/data";
+import type { Notice } from "@/lib/types";
 
-export function Ticker() {
+export function Ticker({ notices }: { notices: Notice[] }) {
+  if (!notices.length) return null;
   const items = (hidden: boolean) =>
-    ACE.notices.map((n, i) => (
+    notices.map((n, i) => (
       <Link key={`${hidden}-${i}`} href={n.href} aria-hidden={hidden || undefined} tabIndex={hidden ? -1 : undefined}>{n.text}</Link>
     ));
   return (

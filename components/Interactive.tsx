@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
-import { ACE, colorFor, initials, type CategoryId, type VideoStory } from "@/lib/data";
+import { colorFor, initials } from "@/lib/utils";
+import type { Category, CategoryId, Course, Faq, Post, Slide, Topper, VideoStory } from "@/lib/types";
 import { Icon } from "./Icons";
 import { CourseCard, PostCard, TopperCard } from "./Cards";
 import { useUI } from "./ui";
@@ -17,32 +18,35 @@ function Tabs({ options, value, onChange, label }: { options: { id: string; labe
     </div>
   );
 }
-const catOptions = [{ id: "all", label: "All" }, ...ACE.categories.map((c) => ({ id: c.id, label: c.label }))];
+
+const allTab = (categories: Category[]) => [{ id: "all", label: "All" }, ...categories.map((c) => ({ id: c.id, label: c.label }))];
 
 /* ---------- Courses with category tabs ---------- */
-export function CourseExplorer({ limit, initialCat = "all", head }: { limit?: number; initialCat?: string; head?: ReactNode }) {
+export function CourseExplorer({ limit, initialCat = "all", head, courses, categories }: { limit?: number; initialCat?: string; head?: ReactNode; courses: Course[]; categories: Category[] }) {
+  const catOptions = useMemo(() => allTab(categories), [categories]);
   const [cat, setCat] = useState(catOptions.some((o) => o.id === initialCat) ? initialCat : "all");
   const list = useMemo(() => {
-    const filtered = ACE.courses.filter((c) => cat === "all" || c.cat === cat);
+    const filtered = courses.filter((c) => cat === "all" || c.cat === cat);
     return limit && cat === "all" ? filtered.slice(0, limit) : filtered;
-  }, [cat, limit]);
+  }, [cat, limit, courses]);
   return (
     <>
       <div className="section-head-row">
         {head}
         <Tabs options={catOptions} value={cat} onChange={setCat} label="Course category" />
       </div>
-      <div className="course-grid">{list.map((c) => <CourseCard key={c.title} c={c} i={ACE.courses.indexOf(c)} />)}</div>
+      <div className="course-grid">{list.map((c) => <CourseCard key={c.title} c={c} i={courses.indexOf(c)} categories={categories} />)}</div>
     </>
   );
 }
 
 /* ---------- Results wall (exam + year filters) ---------- */
-export function ResultsWall() {
+export function ResultsWall({ toppers, categories }: { toppers: Topper[]; categories: Category[] }) {
+  const catOptions = useMemo(() => allTab(categories), [categories]);
   const [cat, setCat] = useState("all");
   const [year, setYear] = useState("all");
-  const years = useMemo(() => [...new Set(ACE.toppers.map((t) => t.year))].sort((a, b) => b - a), []);
-  const list = ACE.toppers.filter((t) => (cat === "all" || t.cat === cat) && (year === "all" || String(t.year) === year));
+  const years = useMemo(() => [...new Set(toppers.map((t) => t.year))].sort((a, b) => b - a), [toppers]);
+  const list = toppers.filter((t) => (cat === "all" || t.cat === cat) && (year === "all" || String(t.year) === year));
   return (
     <>
       <div className="filter-bar">
@@ -62,13 +66,13 @@ export function ResultsWall() {
 }
 
 /* ---------- Blog grid with category tabs ---------- */
-export function BlogExplorer() {
-  const cats = useMemo(() => [{ id: "all", label: "All" }, ...[...new Set(ACE.posts.map((p) => p.cat))].map((c) => ({ id: c, label: c }))], []);
+export function BlogExplorer({ posts }: { posts: Post[] }) {
+  const cats = useMemo(() => [{ id: "all", label: "All" }, ...[...new Set(posts.map((p) => p.cat))].map((c) => ({ id: c, label: c }))], [posts]);
   const [cat, setCat] = useState("all");
   return (
     <>
       <div className="filter-bar"><Tabs options={cats} value={cat} onChange={setCat} label="Blog category" /></div>
-      <div className="blog-grid">{ACE.posts.filter((p) => cat === "all" || p.cat === cat).map((p) => <PostCard key={p.slug} p={p} />)}</div>
+      <div className="blog-grid">{posts.filter((p) => cat === "all" || p.cat === cat).map((p) => <PostCard key={p.slug} p={p} />)}</div>
     </>
   );
 }
@@ -142,39 +146,41 @@ export function Slider({ children, autoplay, head, nav = true }: { children: Rea
   );
 }
 
-export function ToppersSlider({ head }: { head?: ReactNode }) {
+export function ToppersSlider({ toppers, head }: { toppers: Topper[]; head?: ReactNode }) {
   return (
     <Slider autoplay={4500} head={head}>
-      {ACE.toppers.slice(0, 8).map((t) => <TopperCard key={t.name + t.year} t={t} />)}
+      {toppers.slice(0, 8).map((t) => <TopperCard key={t.name + t.year} t={t} />)}
     </Slider>
   );
 }
 
 /* ---------- Hero slider ---------- */
-export function HeroSlider() {
+export function HeroSlider({ slides }: { slides: Slide[] }) {
   const { playVideo } = useUI();
   const [i, setI] = useState(0);
-  const n = ACE.slides.length;
+  const n = slides.length;
   useEffect(() => {
     if (n < 2) return;
     const t = setTimeout(() => setI((x) => (x + 1) % n), 6000);
     return () => clearTimeout(t);
   }, [i, n]);
+  if (!n) return null;
+  const active = slides[Math.min(i, n - 1)];
   return (
     <div className="hero-card">
       <div className="hero-slides">
-        {ACE.slides.map((s, k) => (
+        {slides.map((s, k) => (
           <div key={s.img} className={`hero-slide${k === i ? " active" : ""}`} aria-hidden={k !== i}>
             <Image src={s.img} alt={s.title} fill priority={k === 0} sizes="(max-width: 1024px) 100vw, 50vw" />
           </div>
         ))}
       </div>
       <div className="hero-slide-caption">
-        <div key={i} className="cap-text"><small>{ACE.slides[i].kicker}</small><h3>{ACE.slides[i].title}</h3></div>
-        <button className="play-btn" type="button" aria-label="Play lecture" onClick={() => playVideo(ACE.slides[i].video)}><Icon.play /></button>
+        <div key={i} className="cap-text"><small>{active.kicker}</small><h3>{active.title}</h3></div>
+        <button className="play-btn" type="button" aria-label="Play lecture" onClick={() => playVideo(active.video)}><Icon.play /></button>
       </div>
       <div className="hero-dots">
-        {ACE.slides.map((_, k) => <button key={`${k}-${k === i ? i : "x"}`} type="button" aria-label={`Slide ${k + 1}`} className={k === i ? "active" : ""} onClick={() => setI(k)} />)}
+        {slides.map((_, k) => <button key={`${k}-${k === i ? i : "x"}`} type="button" aria-label={`Slide ${k + 1}`} className={k === i ? "active" : ""} onClick={() => setI(k)} />)}
       </div>
     </div>
   );
@@ -200,17 +206,17 @@ export function Trajectory() {
 const classes = [["8", "Class 8"], ["9", "Class 9"], ["10", "Class 10"], ["11", "Class 11"], ["12", "Class 12"], ["drop", "Dropper"]];
 const goals: [CategoryId, string][] = [["jee", "IIT-JEE"], ["neet", "NEET"], ["cet", "MHT-CET"], ["boards", "Board exams"]];
 
-export function CourseFinder({ kicker, title, text }: { kicker: string; title: ReactNode; text: string }) {
+export function CourseFinder({ kicker, title, text, courses }: { kicker: string; title: ReactNode; text: string; courses: Course[] }) {
   const { enquire } = useUI();
   const [cls, setCls] = useState<string>();
   const [goal, setGoal] = useState<CategoryId>();
   const pick = useMemo(() => {
     if (!cls || !goal) return null;
-    if (["8", "9", "10"].includes(cls)) return ACE.courses.find((x) => x.cat === "foundation");
-    if (goal === "boards") return ACE.courses.find((x) => x.cat === "boards");
-    const list = ACE.courses.filter((x) => x.cat === goal);
+    if (["8", "9", "10"].includes(cls)) return courses.find((x) => x.cat === "foundation");
+    if (goal === "boards") return courses.find((x) => x.cat === "boards");
+    const list = courses.filter((x) => x.cat === goal);
     return (cls === "11" ? list[0] : list[1]) || list[0];
-  }, [cls, goal]);
+  }, [cls, goal, courses]);
 
   return (
     <div className="finder">
@@ -252,11 +258,11 @@ export function CourseFinder({ kicker, title, text }: { kicker: string; title: R
 }
 
 /* ---------- FAQ accordion ---------- */
-export function Accordion({ limit }: { limit?: number }) {
+export function Accordion({ faqs, limit }: { faqs: Faq[]; limit?: number }) {
   const [open, setOpen] = useState(0);
   return (
     <div className="accordion">
-      {ACE.faqs.slice(0, limit).map((f, i) => (
+      {faqs.slice(0, limit).map((f, i) => (
         <div key={f.q} className={`acc-item${open === i ? " open" : ""}`}>
           <button className="acc-q" type="button" aria-expanded={open === i} aria-controls={`faq-${i}`} id={`faq-q-${i}`} onClick={() => setOpen(open === i ? -1 : i)}>
             {f.q}<span className="pm" aria-hidden="true" />

@@ -1,9 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Anton, Barlow_Condensed, Caveat, Plus_Jakarta_Sans } from "next/font/google";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { Ticker } from "@/components/Ticker";
-import { UIProvider } from "@/components/ui";
 import "./globals.css";
 
 const anton = Anton({ weight: "400", subsets: ["latin"], variable: "--ff-anton", display: "swap" });
@@ -34,14 +30,7 @@ export const viewport: Viewport = { themeColor: "#0a1730" };
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${anton.variable} ${barlow.variable} ${caveat.variable} ${jakarta.variable}`}>
-      <body>
-        <UIProvider>
-          <Header />
-          <Ticker />
-          <main id="main">{children}</main>
-          <Footer />
-        </UIProvider>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

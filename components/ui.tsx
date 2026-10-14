@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { Icon } from "./Icons";
 import { EnquiryForm } from "./EnquiryForm";
-import { ACE } from "@/lib/data";
+import type { Course, SiteInfo } from "@/lib/types";
 
 /* ---------------------------------------------------------------------------
    Global UI: enquiry modal, video modal, floating actions and alert toast.
@@ -44,7 +44,7 @@ function Modal({ open, onClose, children, label, className = "" }: { open: boole
   );
 }
 
-function AlertToast() {
+function AlertToast({ site }: { site: SiteInfo }) {
   const [show, setShow] = useState(false);
   useEffect(() => {
     let seen = false;
@@ -57,7 +57,6 @@ function AlertToast() {
     setShow(false);
     try { sessionStorage.setItem("ace_toast", "1"); } catch {}
   };
-  const S = ACE.site;
   return (
     <div className={`toast${show ? " show" : ""}`} role="dialog" aria-live="polite" aria-label="Result alerts">
       <span className="ico"><Icon.bell /></span>
@@ -65,7 +64,7 @@ function AlertToast() {
         <strong>Never miss a result</strong>
         <p>Get exam dates, results &amp; scholarship alerts on WhatsApp.</p>
         <div className="toast-actions">
-          <a className="btn btn-sm" href={`https://wa.me/${S.whatsapp}?text=${encodeURIComponent("Please add me to Ace Minds exam alerts")}`} target="_blank" rel="noopener" onClick={close}>Join alerts</a>
+          <a className="btn btn-sm" href={`https://wa.me/${site.whatsapp}?text=${encodeURIComponent("Please add me to Ace Minds exam alerts")}`} target="_blank" rel="noopener" onClick={close}>Join alerts</a>
           <button className="btn btn-sm btn-ghost" type="button" onClick={close}>Later</button>
         </div>
       </div>
@@ -73,7 +72,7 @@ function AlertToast() {
   );
 }
 
-function FloatingActions({ onEnquire }: { onEnquire: () => void }) {
+function FloatingActions({ site, onEnquire }: { site: SiteInfo; onEnquire: () => void }) {
   const [showTop, setShowTop] = useState(false);
   useEffect(() => {
     const onScroll = () => setShowTop(window.scrollY > 700);
@@ -81,25 +80,24 @@ function FloatingActions({ onEnquire }: { onEnquire: () => void }) {
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  const S = ACE.site;
   return (
     <>
       <button className="enquire-tab" type="button" onClick={onEnquire}>Enquire now</button>
       <div className="fab-stack">
         <button className={`fab top${showTop ? " show" : ""}`} type="button" aria-label="Back to top" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}><Icon.up /></button>
-        <a className="fab call" href={`tel:${S.phoneRaw}`} aria-label="Call us"><Icon.phone /></a>
-        <a className="fab wa" href={`https://wa.me/${S.whatsapp}?text=${encodeURIComponent("Hi Ace Minds, I'd like to know about admissions.")}`} target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><Icon.whatsapp /></a>
+        <a className="fab call" href={`tel:${site.phoneRaw}`} aria-label="Call us"><Icon.phone /></a>
+        <a className="fab wa" href={`https://wa.me/${site.whatsapp}?text=${encodeURIComponent("Hi Ace Minds, I'd like to know about admissions.")}`} target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><Icon.whatsapp /></a>
       </div>
       <div className="mobile-bar">
-        <a href={`tel:${S.phoneRaw}`}><Icon.phone />Call</a>
-        <a className="wa" href={`https://wa.me/${S.whatsapp}`} target="_blank" rel="noopener"><Icon.whatsapp />WhatsApp</a>
+        <a href={`tel:${site.phoneRaw}`}><Icon.phone />Call</a>
+        <a className="wa" href={`https://wa.me/${site.whatsapp}`} target="_blank" rel="noopener"><Icon.whatsapp />WhatsApp</a>
         <button type="button" onClick={onEnquire}>Free demo</button>
       </div>
     </>
   );
 }
 
-export function UIProvider({ children }: { children: ReactNode }) {
+export function UIProvider({ children, site, courses }: { children: ReactNode; site: SiteInfo; courses: Course[] }) {
   const [enq, setEnq] = useState<EnquireOpts | null>(null);
   const [video, setVideo] = useState<string | null>(null);
   const [formKey, setFormKey] = useState(0);
@@ -132,7 +130,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
         <div className="modal-main">
           <span className="eyebrow">Free counselling</span>
           <h3 style={{ fontSize: "1.6rem", marginBottom: 18 }}>{enq?.brochure ? "Get the 2026–27 brochure" : "Tell us about the student"}</h3>
-          <EnquiryForm key={formKey} id="m" source={enq?.brochure ? "brochure" : "modal"} defaultCourse={enq?.course} />
+          <EnquiryForm key={formKey} id="m" source={enq?.brochure ? "brochure" : "modal"} defaultCourse={enq?.course} courses={courses} />
         </div>
       </Modal>
 
@@ -147,8 +145,8 @@ export function UIProvider({ children }: { children: ReactNode }) {
         )}
       </Modal>
 
-      <FloatingActions onEnquire={() => enquire()} />
-      <AlertToast />
+      <FloatingActions site={site} onEnquire={() => enquire()} />
+      <AlertToast site={site} />
     </Ctx.Provider>
   );
 }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ACE } from "@/lib/data";
+import type { Category, SiteInfo } from "@/lib/types";
 import { Icon, Logo } from "./Icons";
 import { useUI } from "./ui";
 
@@ -19,8 +19,7 @@ const mobile = [
   ["/testimonials", "Testimonials"], ["/about", "About"], ["/blog", "Blog"], ["/contact", "Contact"],
 ];
 
-export function Header() {
-  const S = ACE.site;
+export function Header({ site: S, categories }: { site: SiteInfo; categories: Category[] }) {
   const path = usePathname();
   const { enquire } = useUI();
   const [scrolled, setScrolled] = useState(false);
@@ -80,7 +79,7 @@ export function Header() {
             <div className="nav-drop">
               <button type="button" aria-haspopup="true">Courses <Icon.down /></button>
               <div className="drop-panel">
-                {ACE.categories.map((c) => (
+                {categories.map((c) => (
                   <Link key={c.id} href={`/courses?cat=${c.id}`}>
                     <span className="drop-ico" style={{ background: c.color }}>{c.short}</span>
                     <span><strong>{c.label}</strong><small>{c.desc}</small></span>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { CourseExplorer, CourseFinder, Accordion } from "@/components/Interactive";
 import { Reveal } from "@/components/Reveal";
 import { CtaBand, PageHero, SectionHead } from "@/components/Sections";
+import { getCategories, getCourses, getFaqs } from "@/lib/queries";
 
 export const metadata: Metadata = {
   title: "Courses · IIT-JEE, NEET, MHT-CET, Boards & Foundation",
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 
 export default async function CoursesPage({ searchParams }: { searchParams: Promise<{ cat?: string }> }) {
   const { cat } = await searchParams;
+  const [courses, categories, faqs] = await Promise.all([getCourses(), getCategories(), getFaqs()]);
   return (
     <>
       <PageHero
@@ -20,13 +22,13 @@ export default async function CoursesPage({ searchParams }: { searchParams: Prom
       />
       <section className="section section-cream">
         <div className="container">
-          <CourseExplorer key={cat ?? "all"} initialCat={cat} head={<SectionHead eyebrow="Choose your track" title={<>All <span className="tag">programs</span></>} />} />
+          <CourseExplorer key={cat ?? "all"} initialCat={cat} courses={courses} categories={categories} head={<SectionHead eyebrow="Choose your track" title={<>All <span className="tag">programs</span></>} />} />
         </div>
       </section>
       <section className="section" id="finder">
         <div className="container">
           <Reveal>
-            <CourseFinder kicker="Still confused?" title={<>Let us <span style={{ color: "var(--gold-400)" }}>pick for you</span></>} text="Answer two questions and get the program our toppers took at your stage." />
+            <CourseFinder kicker="Still confused?" title={<>Let us <span style={{ color: "var(--gold-400)" }}>pick for you</span></>} text="Answer two questions and get the program our toppers took at your stage." courses={courses} />
           </Reveal>
         </div>
       </section>
@@ -46,7 +48,7 @@ export default async function CoursesPage({ searchParams }: { searchParams: Prom
       <section className="section">
         <div className="container faq-grid">
           <div className="faq-aside"><span className="eyebrow">FAQs</span><h2 className="display section-title">Course <span className="tag">questions</span></h2></div>
-          <Accordion />
+          <Accordion faqs={faqs} />
         </div>
       </section>
       <CtaBand />

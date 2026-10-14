@@ -1,17 +1,36 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ACE } from "@/lib/data";
+import type { Pillar } from "@/lib/types";
 import { Icon } from "@/components/Icons";
 import { Counter, Reveal } from "@/components/Reveal";
 import { EnquireButton, VideoButton } from "@/components/ui";
 import { FacultyCard, LetterCard, PostCard, PosterCard, ReviewCard, ReviewSummary } from "@/components/Cards";
 import { Accordion, CourseExplorer, CourseFinder, HeroSlider, StoryCard, ToppersSlider, Trajectory } from "@/components/Interactive";
 import { ArrowLink, SectionHead } from "@/components/Sections";
+import {
+  getCourses, getFaculty, getFaqs, getLetters, getPosters, getPublishedPosts, getReviewSummary, getReviews,
+  getResultStats, getSiteSettings, getSlides, getToppers, getVideoStories, getCategories,
+} from "@/lib/queries";
 
 const lectureUrl = "https://www.youtube.com/embed/videoseries?list=PLACEHOLDER";
 
-export default function Home() {
-  const S = ACE.site;
+/* Static marketing strip — not admin-managed. */
+const pillars: Pillar[] = [
+  { icon: "target", title: "Personal Attention", text: "Max 30 per batch" },
+  { icon: "cap", title: "IIT Alumni Mentors", text: "Taught by toppers" },
+  { icon: "clipboard", title: "Weekly Tests", text: "With rank analysis" },
+  { icon: "heart", title: "Student-First", text: "Same-day doubt solving" },
+];
+
+export default async function Home() {
+  const [
+    S, categories, courses, toppers, resultStats, slides, videoStories, letters, reviews,
+    reviewSummary, faculty, posters, faqs, posts,
+  ] = await Promise.all([
+    getSiteSettings(), getCategories(), getCourses(), getToppers(), getResultStats(), getSlides(),
+    getVideoStories(), getLetters(), getReviews(), getReviewSummary(), getFaculty(), getPosters(),
+    getFaqs(), getPublishedPosts(),
+  ]);
   return (
     <>
       {/* ================= HERO ================= */}
@@ -33,7 +52,7 @@ export default function Home() {
               <Link className="btn btn-ghost" href="/courses">Explore courses</Link>
             </div>
             <div className="pillars">
-              {ACE.pillars.map((p) => {
+              {pillars.map((p) => {
                 const Ico = Icon[p.icon];
                 return (
                   <div className="pillar" key={p.title}>
@@ -58,14 +77,14 @@ export default function Home() {
 
           <div className="hero-visual">
             <Trajectory />
-            <HeroSlider />
+            <HeroSlider slides={slides} />
             <div className="float-chip c1">
               <span className="ico" style={{ background: "#fff4d1", color: "#e0a516" }}><Icon.trophy /></span>
               <span><strong>120+</strong><small>IIT &amp; NIT selections</small></span>
             </div>
             <div className="float-chip c2">
               <span className="ico" style={{ background: "#e8f1fe", color: "#2e7bea" }}><Icon.star /></span>
-              <span><strong>{ACE.reviewSummary.rating} / 5</strong><small>{ACE.reviewSummary.count}+ Google reviews</small></span>
+              <span><strong>{reviewSummary.rating} / 5</strong><small>{reviewSummary.count}+ Google reviews</small></span>
             </div>
             <span className="formula-chip f1" aria-hidden="true">P = W / t</span>
             <span className="formula-chip f2" aria-hidden="true">y = x tanθ − gx²/2u²cos²θ</span>
@@ -100,6 +119,7 @@ export default function Home() {
               kicker="Not sure where to start?"
               title={<>Find your <span style={{ color: "var(--gold-400)" }}>perfect batch</span> in 2 clicks</>}
               text="Tell us your class and your goal. We'll match you with the program our toppers took."
+              courses={courses}
             />
           </Reveal>
         </div>
@@ -110,6 +130,8 @@ export default function Home() {
         <div className="container">
           <CourseExplorer
             limit={6}
+            courses={courses}
+            categories={categories}
             head={
               <SectionHead
                 eyebrow="Programs"
@@ -126,6 +148,7 @@ export default function Home() {
       <section className="section section-navy on-dark" id="results">
         <div className="container">
           <ToppersSlider
+            toppers={toppers}
             head={
               <SectionHead
                 eyebrow="Hall of fame"
@@ -135,7 +158,7 @@ export default function Home() {
             }
           />
           <Reveal stagger className="results-strip">
-            {ACE.resultStats.map((s) => <div key={s.label}><Counter value={s.value} suffix={s.suffix} /><span>{s.label}</span></div>)}
+            {resultStats.map((s) => <div key={s.label}><Counter value={s.value} suffix={s.suffix} /><span>{s.label}</span></div>)}
           </Reveal>
           <div style={{ textAlign: "center", marginTop: 36 }}><ArrowLink className="btn btn-gold" href="/results">See all results</ArrowLink></div>
         </div>
@@ -191,7 +214,7 @@ export default function Home() {
       <section className="section section-cream" style={{ paddingBlock: "clamp(60px,8vw,90px)" }}>
         <div className="container">
           <SectionHead eyebrow="Happening now" title={<>Don&apos;t miss <span className="tag">these</span></>} />
-          <Reveal stagger className="poster-grid">{ACE.posters.map((p) => <PosterCard key={p.title} p={p} />)}</Reveal>
+          <Reveal stagger className="poster-grid">{posters.map((p) => <PosterCard key={p.title} p={p} />)}</Reveal>
         </div>
       </section>
 
@@ -245,16 +268,16 @@ export default function Home() {
         <div className="container">
           <div className="section-head-row">
             <SectionHead eyebrow="Student stories" title={<>Hear it from <span className="tag">our achievers</span></>} />
-            <ReviewSummary />
+            <ReviewSummary s={reviewSummary} />
           </div>
-          <Reveal stagger className="story-grid">{ACE.videoStories.map((v) => <StoryCard key={v.name} v={v} />)}</Reveal>
+          <Reveal stagger className="story-grid">{videoStories.map((v) => <StoryCard key={v.name} v={v} />)}</Reveal>
 
           <div className="section-head center" style={{ margin: "90px auto 40px" }}>
             <span className="hand letters-title">Notes they left for Sir…</span>
           </div>
-          <Reveal stagger className="letter-grid">{ACE.letters.map((l, i) => <LetterCard key={l.name} l={l} i={i} />)}</Reveal>
+          <Reveal stagger className="letter-grid">{letters.map((l, i) => <LetterCard key={l.name} l={l} i={i} />)}</Reveal>
 
-          <Reveal stagger className="review-grid" style={{ marginTop: 70 }}>{ACE.reviews.slice(0, 4).map((r) => <ReviewCard key={r.name} r={r} />)}</Reveal>
+          <Reveal stagger className="review-grid" style={{ marginTop: 70 }}>{reviews.slice(0, 4).map((r) => <ReviewCard key={r.name} r={r} />)}</Reveal>
           <div style={{ textAlign: "center", marginTop: 36 }}><Link className="btn btn-ghost" href="/testimonials">Read all testimonials</Link></div>
         </div>
       </section>
@@ -266,7 +289,7 @@ export default function Home() {
             <SectionHead eyebrow="Faculty" title={<>Mentors from <span className="tag">IIT · NIT · AIIMS</span></>} />
             <ArrowLink href="/faculty">All faculty</ArrowLink>
           </div>
-          <Reveal stagger className="faculty-grid">{ACE.faculty.map((f) => <FacultyCard key={f.name} f={f} />)}</Reveal>
+          <Reveal stagger className="faculty-grid">{faculty.map((f) => <FacultyCard key={f.name} f={f} />)}</Reveal>
         </div>
       </section>
 
@@ -283,7 +306,7 @@ export default function Home() {
               <EnquireButton className="btn btn-gold btn-sm">Request a call back</EnquireButton>
             </div>
           </Reveal>
-          <Reveal><Accordion /></Reveal>
+          <Reveal><Accordion faqs={faqs} /></Reveal>
         </div>
       </section>
 
@@ -294,7 +317,7 @@ export default function Home() {
             <SectionHead eyebrow="Blog & exam news" title={<>Stay ahead of <span className="tag">every update</span></>} />
             <ArrowLink href="/blog">All articles</ArrowLink>
           </div>
-          <Reveal stagger className="blog-grid">{ACE.posts.slice(0, 3).map((p) => <PostCard key={p.slug} p={p} />)}</Reveal>
+          <Reveal stagger className="blog-grid">{posts.slice(0, 3).map((p) => <PostCard key={p.slug} p={p} />)}</Reveal>
         </div>
       </section>
 

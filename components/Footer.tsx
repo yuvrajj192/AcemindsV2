@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { ACE } from "@/lib/data";
+import type { Category, SiteInfo } from "@/lib/types";
 import { Icon, Logo } from "./Icons";
 import { Newsletter } from "./Newsletter";
 
-export function Footer() {
-  const S = ACE.site;
+export function Footer({ site: S, categories }: { site: SiteInfo; categories: Category[] }) {
   return (
     <footer className="site-footer on-dark">
       <div className="container">
@@ -24,7 +23,7 @@ export function Footer() {
           </div>
           <div>
             <h5>Programs</h5>
-            <div className="footer-links">{ACE.categories.map((c) => <Link key={c.id} href={`/courses?cat=${c.id}`}>{c.label}</Link>)}</div>
+            <div className="footer-links">{categories.map((c) => <Link key={c.id} href={`/courses?cat=${c.id}`}>{c.label}</Link>)}</div>
           </div>
           <div>
             <h5>Explore</h5>

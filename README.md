@@ -1,14 +1,30 @@
-# Ace Minds — website frontend
+# Ace Minds — website
 
-Frontend for **aceminds.in** (Ace Minds Private Tutorials · An IIT Alumni Initiative), built with **Next.js (App Router) + TypeScript**. The backend and admin panel are not built yet. All content comes from one typed data file, so it can be swapped for an API later.
+Frontend + content layer for **aceminds.in** (Ace Minds Private Tutorials · An IIT Alumni Initiative), built with **Next.js (App Router) + TypeScript**. Site content now lives in **Postgres (Neon)** via Drizzle ORM; `lib/data.ts` is only the seed source. The admin panel is not built yet.
 
 ## Run it
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000
-npm run build && npm start   # production build
+cp .env.example .env.local    # fill in DATABASE_URL (Neon pooled URL)
+npm run db:push               # create tables
+npm run db:seed               # load content from lib/data.ts
+npm run dev                   # http://localhost:3000
+npm run build && npm start    # production build
 ```
+
+## Database
+
+| Command | What it does |
+| --- | --- |
+| `npm run db:push` | Push `lib/db/schema.ts` to the DB (drizzle-kit) |
+| `npm run db:seed` | Truncate content tables and re-seed from `lib/data.ts` (re-runnable) |
+| `npm run db:generate` | Generate SQL migration files into `drizzle/` |
+| `npm run db:studio` | Browse the DB in Drizzle Studio |
+
+- **Driver:** `pg` + `drizzle-orm/node-postgres`. Use Neon's **pooled** connection string in `DATABASE_URL`.
+- **Caching:** content queries in `lib/queries.ts` are wrapped in `unstable_cache` with tags (`courses`, `toppers`, `posts`, …), 1h fallback. Admin actions (Phase 1+) will call `revalidateTag` for instant updates.
+- **Seed:** `scripts/seed.ts` — imports `ACE` from `lib/data.ts`. Edit that file and re-run `db:seed` to refresh sample content until the admin panel lands.
 
 ## Pages
 
@@ -38,18 +54,24 @@ components/
   Cards.tsx          course / topper / faculty / review / letter / poster / post cards
   EnquiryForm.tsx    validated enquiry form
   Header, Footer, Ticker, Sections, Reveal, Icons
-lib/data.ts          ALL site content (typed). One list per future admin module.
+lib/
+  types.ts           shared domain types (SiteData shape, Course, Topper, …)
+  utils.ts           pure helpers (initials, colorFor, formatDate, …)
+  queries.ts         Drizzle queries + unstable_cache — what pages call
+  db/schema.ts       Drizzle tables
+  data.ts            SEED ONLY — the original static content
+scripts/seed.ts      loads lib/data.ts into Postgres
 public/img/          lecture thumbnails, faculty photos, favicon
 ```
 
 ## Hooking up the backend later
 
-- **Content**: every list in `lib/data.ts` (courses, toppers, testimonials, faculty, slides, posters, FAQs, posts, notices) matches a planned admin module. Replace it with a fetch in Server Components that returns the same shape.
-- **Enquiries**: `components/EnquiryForm.tsx` currently saves submissions to `localStorage` (`ace_enquiries`) so the flow can be demoed. Replace the marked block with a `POST /api/enquiries` that stores the enquiry and handles the email alert and Excel export.
+- **Content:** done for Phase 0 — pages read from Postgres via `lib/queries.ts`. The admin panel (Phase 1+) will mutate the same tables and call `revalidateTag`.
+- **Enquiries:** `components/EnquiryForm.tsx` still saves submissions to `localStorage` (`ace_enquiries`). Phase 5 replaces the marked block with a `POST /api/enquiries` (admin + email alert + Excel export).
 
 ## ⚠️ Replace before going live
 
-Toppers, scores, reviews, student letters, phone number, address, map, social links and YouTube video URLs in `lib/data.ts` are **sample placeholders**. Only Deepak Rana Sir's photos and lecture thumbnails are real assets.
+Toppers, scores, reviews, student letters, phone number, address, map, social links and YouTube video URLs seeded into the database are **sample placeholders**. Only Deepak Rana Sir's photos and lecture thumbnails are real assets. Edit them in Postgres (or re-seed after updating `lib/data.ts`) before launch.
 
 ## Design
 

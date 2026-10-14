@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ACE } from "@/lib/data";
+import { getSiteSettings } from "@/lib/queries";
 import { Icon } from "./Icons";
 import { Reveal } from "./Reveal";
 import { EnquireButton } from "./ui";
@@ -36,7 +36,8 @@ export function SectionHead({ eyebrow, title, text, center, style }: { eyebrow: 
   );
 }
 
-export function CtaBand({ hand = "Your seat is waiting", title, text }: { hand?: string; title?: ReactNode; text?: string }) {
+export async function CtaBand({ hand = "Your seat is waiting", title, text }: { hand?: string; title?: ReactNode; text?: string }) {
+  const site = await getSiteSettings();
   return (
     <section className="section" style={{ paddingTop: "clamp(50px,7vw,80px)" }}>
       <div className="container">
@@ -48,7 +49,7 @@ export function CtaBand({ hand = "Your seat is waiting", title, text }: { hand?:
           </div>
           <div className="cta-actions">
             <EnquireButton className="btn">Book a free demo <Icon.arrow /></EnquireButton>
-            <a className="btn btn-ghost" href={`tel:${ACE.site.phoneRaw}`}>Call a counsellor</a>
+            <a className="btn btn-ghost" href={`tel:${site.phoneRaw}`}>Call a counsellor</a>
           </div>
         </Reveal>
       </div>

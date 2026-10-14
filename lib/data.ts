@@ -1,44 +1,18 @@
 /* ==========================================================================
-   ACE MINDS — site content
+   ACE MINDS — seed content
    --------------------------------------------------------------------------
-   Every list in this file maps 1:1 to a module of the future admin panel
-   (courses, results/toppers, testimonials, faculty, sliders, posters, FAQs,
-   blog posts, notices). When the backend lands, replace this file with an
-   API call (e.g. fetch in a Server Component) returning the same shape and the pages keep
-   working unchanged.
+   This is the seed source for the database (scripts/seed.ts). Pages no longer
+   import ACE — they read from lib/queries.ts (Drizzle + cached queries).
+   Types live in lib/types.ts; pure helpers in lib/utils.ts.
 
    ⚠️ Toppers, scores, reviews and some contact details below are SAMPLE
-   placeholders for layout only. Replace with real data before going live.
+   placeholders for layout only. Replace with real data before going live
+   (or edit them later from the admin panel).
    ========================================================================== */
 
-export type CategoryId = "jee" | "neet" | "cet" | "boards" | "foundation";
-export interface Notice { text: string; href: string }
-export interface Slide { img: string; kicker: string; title: string; video: string }
-export interface Category { id: CategoryId; label: string; short: string; desc: string; color: string }
-export interface Course {
-  cat: CategoryId; title: string; for: string; duration: string; mode: string; start: string; batch: string;
-  badge?: string; hot?: boolean; seats: number; features: string[];
-}
-export interface Topper { name: string; exam: string; year: number; rank: string; score: string; college: string; cat: CategoryId; img?: string }
-export interface Stat { value: number; suffix: string; label: string }
-export interface VideoStory { name: string; batch: string; headline: string; lines: string[]; video: string }
-export interface Letter { name: string; tag: string; text: string }
-export interface Review { name: string; role: string; when: string; text: string }
-export interface Faculty { name: string; role: string; edu: string; exp: string; subject: string; img?: string; tags: string[]; bio: string }
-export interface Pillar { icon: "target" | "cap" | "clipboard" | "heart"; title: string; text: string }
-export interface Poster { theme: "p-gold" | "p-navy" | "p-cream"; date: string; title: string; text: string; cta: string; href: string; deco: string }
-export interface Faq { q: string; a: string }
-export interface Post { slug: string; cat: string; date: string; read: string; title: string; excerpt: string; color: string; img?: string }
-export interface SiteData {
-  site: {
-    name: string; tagline: string; initiative: string; domain: string; phone: string; phoneRaw: string; whatsapp: string;
-    email: string; address: string; hours: string; mapEmbed: string; youtube: string; instagram: string; facebook: string;
-    brochure: string; founded: number;
-  };
-  notices: Notice[]; slides: Slide[]; categories: Category[]; courses: Course[]; toppers: Topper[]; resultStats: Stat[];
-  videoStories: VideoStory[]; letters: Letter[]; reviews: Review[]; reviewSummary: { rating: number; count: number };
-  faculty: Faculty[]; pillars: Pillar[]; posters: Poster[]; faqs: Faq[]; posts: Post[];
-}
+import type { SiteData } from "./types";
+
+export type { SiteData };
 
 export const ACE: SiteData = {
   site: {
@@ -217,8 +191,3 @@ export const ACE: SiteData = {
     { slug: "toppers-daily-routine", cat: "Toppers", date: "12 Aug 2026", read: "4 min", title: "Inside a topper's day: the routine behind AIR 1,284", excerpt: "Sleep, revision cycles and the 30-minute habit our topper never skipped.", color: "#0f2347" }
   ]
 };
-
-export const catOf = (id: string) => ACE.categories.find((c) => c.id === id);
-export const initials = (n: string) => n.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
-const palette = ["#2e7bea", "#e63946", "#f28c28", "#16315f", "#e0a516", "#1f427a"];
-export const colorFor = (s: string) => palette[[...s].reduce((a, c) => a + c.charCodeAt(0), 0) % palette.length];

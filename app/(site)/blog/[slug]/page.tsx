@@ -1,28 +1,32 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ACE } from "@/lib/data";
 import { PostCard } from "@/components/Cards";
 import { Icon } from "@/components/Icons";
 import { PageHero, SectionHead } from "@/components/Sections";
 import { EnquireButton } from "@/components/ui";
+import { getPostBySlug, getPublishedPosts } from "@/lib/queries";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return ACE.posts.map((p) => ({ slug: p.slug }));
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const posts = await getPublishedPosts();
+  return posts.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const p = ACE.posts.find((x) => x.slug === slug);
+  const p = await getPostBySlug(slug);
   return p ? { title: p.title, description: p.excerpt } : {};
 }
 
 export default async function PostPage({ params }: Props) {
   const { slug } = await params;
-  const p = ACE.posts.find((x) => x.slug === slug);
+  const p = await getPostBySlug(slug);
   if (!p) notFound();
+  const all = await getPublishedPosts();
   return (
     <>
       <PageHero crumb={p.cat} crumbs={[{ href: "/blog", label: "Blog" }]} title={<span style={{ fontSize: "clamp(2.2rem,5vw,3.8rem)" }}>{p.title}</span>} text={`${p.cat} · ${p.date} · ${p.read} read`} />
@@ -31,6 +35,7 @@ export default async function PostPage({ params }: Props) {
           <article className="article">
             {p.img && <Image src={p.img} alt="" width={1672} height={941} style={{ borderRadius: "var(--radius-lg)", marginBottom: 28, boxShadow: "var(--shadow)", height: "auto" }} sizes="760px" priority />}
             <p style={{ fontSize: "1.25rem", color: "var(--ink)" }}>{p.excerpt}</p>
+            {/* TODO(Phase 4): render DB-stored Tiptap body once the Blog admin module ships. */}
             <div className="callout"><strong>Editor&apos;s note:</strong> this article body is placeholder copy. Once the admin panel is live, posts are written and published from the Blog module.</div>
             <h2>Why this matters</h2>
             <p>Every season the exam calendar shifts a little, and students who plan around the real dates — not last year&apos;s — gain weeks of revision time. Here is what our faculty recommend.</p>
@@ -48,7 +53,7 @@ export default async function PostPage({ params }: Props) {
       <section className="section section-cream">
         <div className="container">
           <SectionHead eyebrow="Keep reading" title={<>Related <span className="tag">articles</span></>} />
-          <div className="blog-grid">{ACE.posts.filter((x) => x.slug !== p.slug).slice(0, 3).map((x) => <PostCard key={x.slug} p={x} />)}</div>
+          <div className="blog-grid">{all.filter((x) => x.slug !== p.slug).slice(0, 3).map((x) => <PostCard key={x.slug} p={x} />)}</div>
         </div>
       </section>
     </>

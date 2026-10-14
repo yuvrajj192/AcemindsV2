@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { ACE } from "@/lib/data";
 import { FacultyCard } from "@/components/Cards";
 import { Icon } from "@/components/Icons";
 import { Reveal } from "@/components/Reveal";
 import { CtaBand, PageHero, SectionHead } from "@/components/Sections";
+import { getFaculty, getSiteSettings } from "@/lib/queries";
 
 export const metadata: Metadata = {
   title: "About · An IIT Alumni Initiative",
   description: "The story, mission and teaching method behind Ace Minds Private Tutorials, an IIT alumni initiative.",
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const [site, faculty] = await Promise.all([getSiteSettings(), getFaculty()]);
   return (
     <>
-      <PageHero crumb="About" title={<>An <span className="gold">IIT alumni</span> initiative</>} text="We started Ace Minds to give students the kind of teaching we wished we had — clear, patient and relentlessly concept-first." big="AM" hand={`since ${ACE.site.founded}`} />
+      <PageHero crumb="About" title={<>An <span className="gold">IIT alumni</span> initiative</>} text="We started Ace Minds to give students the kind of teaching we wished we had — clear, patient and relentlessly concept-first." big="AM" hand={`since ${site.founded}`} />
       <section className="section">
         <div className="container about-grid">
           <Reveal>
@@ -55,7 +56,7 @@ export default function AboutPage() {
       <section className="section">
         <div className="container">
           <SectionHead eyebrow="Faculty" title={<>The <span className="tag">team</span></>} />
-          <Reveal stagger className="faculty-grid">{ACE.faculty.map((f) => <FacultyCard key={f.name} f={f} />)}</Reveal>
+          <Reveal stagger className="faculty-grid">{faculty.map((f) => <FacultyCard key={f.name} f={f} />)}</Reveal>
         </div>
       </section>
       <CtaBand />

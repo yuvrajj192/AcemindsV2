@@ -4,13 +4,15 @@ import { Icon } from "@/components/Icons";
 import { Reveal } from "@/components/Reveal";
 import { CtaBand, PageHero, SectionHead } from "@/components/Sections";
 import { EnquireButton } from "@/components/ui";
+import { getCourses } from "@/lib/queries";
 
 export const metadata: Metadata = {
   title: "Admissions 2026–28 · ACE-SAT Scholarship & Counselling",
   description: "Admission process, ACE-SAT scholarship test and free academic counselling at Ace Minds.",
 };
 
-export default function AdmissionsPage() {
+export default async function AdmissionsPage() {
+  const courses = await getCourses();
   return (
     <>
       <PageHero crumb="Admissions" title={<>Admissions <span className="gold">2026–28</span> are open</>} text="Four simple steps from enquiry to your first class — with scholarships of up to 90% through ACE-SAT." big="26" hand="limited seats per batch" />
@@ -67,7 +69,7 @@ export default function AdmissionsPage() {
           </Reveal>
           <Reveal className="form-card">
             <h3 style={{ fontSize: "1.6rem" }}>Book a counselling session</h3>
-            <EnquiryForm id="adm" source="counselling" cta="Book my session" />
+            <EnquiryForm id="adm" source="counselling" cta="Book my session" courses={courses} />
           </Reveal>
         </div>
       </section>

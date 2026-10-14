@@ -1,11 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ACE, catOf, colorFor, initials, type Course, type Faculty, type Letter, type Post, type Poster, type Review, type Topper } from "@/lib/data";
+import { catOf, colorFor, initials } from "@/lib/utils";
+import type { Category, Course, Faculty, Letter, Post, Poster, Review, ReviewSummary, Topper } from "@/lib/types";
 import { Icon, Stars } from "./Icons";
 import { EnquireButton } from "./ui";
 
-export function CourseCard({ c, i }: { c: Course; i: number }) {
-  const cat = catOf(c.cat);
+export function CourseCard({ c, i, categories }: { c: Course; i: number; categories: Category[] }) {
+  const cat = catOf(categories, c.cat);
   return (
     <article className="course-card" style={{ ["--accent" as string]: cat?.color }}>
       <span className="num">{String(i + 1).padStart(2, "0")}</span>
@@ -78,8 +79,7 @@ export function ReviewCard({ r }: { r: Review }) {
   );
 }
 
-export function ReviewSummary() {
-  const s = ACE.reviewSummary;
+export function ReviewSummary({ s }: { s: ReviewSummary }) {
   return (
     <div className="review-summary">
       <span className="g"><Icon.google /></span>

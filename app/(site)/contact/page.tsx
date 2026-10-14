@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
-import { ACE } from "@/lib/data";
 import { EnquiryForm } from "@/components/EnquiryForm";
 import { Icon, type IconName } from "@/components/Icons";
 import { Reveal } from "@/components/Reveal";
 import { CtaBand, PageHero } from "@/components/Sections";
+import { getCourses, getSiteSettings } from "@/lib/queries";
 
 export const metadata: Metadata = {
   title: "Contact · Visit, Call or WhatsApp",
   description: "Get in touch with Ace Minds Private Tutorials — address, phone, WhatsApp and enquiry form.",
 };
 
-export default function ContactPage() {
-  const S = ACE.site;
+export default async function ContactPage() {
+  const [S, courses] = await Promise.all([getSiteSettings(), getCourses()]);
   const cards: [IconName, string, string, string?][] = [
     ["pin", "Visit us", S.address],
     ["phone", "Call", S.phone, `tel:${S.phoneRaw}`],
@@ -39,7 +39,7 @@ export default function ContactPage() {
           <Reveal className="form-card">
             <span className="eyebrow">Enquiry</span>
             <h2 style={{ fontSize: "1.8rem" }}>Send us a message</h2>
-            <EnquiryForm id="c" full source="contact" cta="Send enquiry" />
+            <EnquiryForm id="c" full source="contact" cta="Send enquiry" courses={courses} />
           </Reveal>
         </div>
       </section>
