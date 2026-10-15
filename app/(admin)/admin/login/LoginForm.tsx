@@ -1,27 +1,45 @@
 "use client";
 
-import { useEffect, useActionState } from "react";
-import { login, type LoginState } from "@/lib/actions/auth";
+import { useState } from "react";
+import { login } from "@/lib/actions/auth";
 
 export function LoginForm() {
-  const [state, formAction, pending] = useActionState<LoginState, FormData>(login, undefined);
+  const [error, setError] = useState<string | null>(null);
+  const [ok, setOk] = useState(false);
+  const [pending, setPending] = useState(false);
 
-  useEffect(() => {
-    if (state?.ok) {
-      /* Full page load — cookie is already set; avoids stuck `pending`
-         from client-side RSC navigation after the action resolves. */
-      window.location.assign("/admin");
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (pending || ok) return;
+    setPending(true);
+    setError(null);
+    try {
+      /* Manual dispatch instead of useActionState: if the flight response is ever
+         lost (redirect, stale action id, network), the promise rejects and we
+         recover — pending can never hang on "Signing in…". */
+      const res = await login(undefined, new FormData(e.currentTarget));
+      if (res?.ok) {
+        setOk(true);
+        /* Session cookie is already set — full page load into the panel. */
+        window.location.assign("/admin");
+      } else {
+        setError(res?.error ?? "Sign-in failed. Please try again.");
+        setPending(false);
+      }
+    } catch {
+      setError("Something went wrong. Please try again.");
+      setPending(false);
     }
-  }, [state]);
+  }
 
   return (
-    <form action={formAction} className="alogin__form">
-      {state?.error ? (
+    <form onSubmit={onSubmit} className="alogin__form">
+      {error ? (
         <p className="alogin__error" role="alert">
-          {state.error}
+          {error}
         </p>
       ) : null}
-      {state?.ok ? (
+      {ok ? (
         <p className="alogin__ok" role="status">
           Signed in — opening panel…
         </p>
@@ -34,8 +52,8 @@ export function LoginForm() {
         <span>Password</span>
         <input name="password" type="password" autoComplete="current-password" placeholder="••••••••" required />
       </label>
-      <button className="alogin__btn" type="submit" disabled={pending || state?.ok}>
-        {state?.ok ? "Signed in…" : pending ? "Signing in…" : "Sign in"}
+      <button className="alogin__btn" type="submit" disabled={pending || ok}>
+        {ok ? "Signed in…" : pending ? "Signing in…" : "Sign in"}
       </button>
     </form>
   );

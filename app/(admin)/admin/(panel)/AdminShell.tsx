@@ -14,14 +14,14 @@ const NAV: NavSection[] = [
   {
     section: "Content",
     items: [
-      { href: "/admin/courses", label: "Courses", soon: true },
+      { href: "/admin/courses", label: "Courses" },
       { href: "/admin/toppers", label: "Toppers & Results" },
       { href: "/admin/faculty", label: "Faculty" },
       { href: "/admin/slides", label: "Sliders" },
-      { href: "/admin/posters", label: "Posters", soon: true },
-      { href: "/admin/faqs", label: "FAQs", soon: true },
-      { href: "/admin/notices", label: "Notice ticker", soon: true },
-      { href: "/admin/testimonials", label: "Testimonials", soon: true },
+      { href: "/admin/posters", label: "Posters" },
+      { href: "/admin/faqs", label: "FAQs" },
+      { href: "/admin/notices", label: "Notice ticker" },
+      { href: "/admin/testimonials", label: "Testimonials" },
     ],
   },
   { section: "Blog", items: [{ href: "/admin/posts", label: "Posts" }] },
@@ -84,8 +84,13 @@ export function AdminShell({ user, children }: { user: SessionUser; children: Re
           <form
             action={() =>
               startLogout(async () => {
-                await logout();
-                window.location.assign("/admin/login");
+                try {
+                  await logout();
+                } catch {
+                  /* Session may already be gone — leave either way. */
+                } finally {
+                  window.location.assign("/admin/login");
+                }
               })
             }
           >

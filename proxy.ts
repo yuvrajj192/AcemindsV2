@@ -6,6 +6,14 @@ const ADMIN = "/admin";
 
 /* Optimistic check only (no DB, jose-only) — real authorization lives in layouts/actions. */
 export async function proxy(request: NextRequest) {
+  /* Never redirect server-action POSTs. A 307 makes the browser fetch follow to a
+     page that doesn't register the action, so the Flight response never resolves
+     and the client's pending state hangs forever ("Signing in…" stuck). Actions
+     guard themselves with requireStaff(). */
+  if (request.headers.has("next-action")) {
+    return NextResponse.next();
+  }
+
   const { pathname } = request.nextUrl;
   const token = request.cookies.get(SESSION_COOKIE)?.value;
   const session = await decrypt(token);
