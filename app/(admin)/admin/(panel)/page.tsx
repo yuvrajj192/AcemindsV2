@@ -62,7 +62,7 @@ export default async function AdminDashboard() {
   const quick: { href: string; label: string; desc: string; soon?: boolean }[] = [
     { href: "/admin/courses", label: "Manage courses", desc: "Add or edit courses, fees, eligibility", soon: true },
     { href: "/admin/posts", label: "Write a post", desc: "Blog editor with cover images", soon: true },
-    { href: "/admin/media", label: "Media library", desc: "Upload photos to Cloudflare R2", soon: true },
+    { href: "/admin/media", label: "Media library", desc: "Upload photos to Cloudflare R2" },
     { href: "/admin/enquiries", label: "Enquiries", desc: "New leads + Excel export", soon: true },
   ];
 

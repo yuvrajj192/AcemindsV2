@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTransition } from "react";
 import { logout } from "@/lib/actions/auth";
 import type { SessionUser } from "@/lib/session";
 
@@ -14,20 +15,20 @@ const NAV: NavSection[] = [
     section: "Content",
     items: [
       { href: "/admin/courses", label: "Courses", soon: true },
-      { href: "/admin/toppers", label: "Toppers & Results", soon: true },
-      { href: "/admin/faculty", label: "Faculty", soon: true },
-      { href: "/admin/sliders", label: "Sliders", soon: true },
+      { href: "/admin/toppers", label: "Toppers & Results" },
+      { href: "/admin/faculty", label: "Faculty" },
+      { href: "/admin/slides", label: "Sliders" },
       { href: "/admin/posters", label: "Posters", soon: true },
       { href: "/admin/faqs", label: "FAQs", soon: true },
       { href: "/admin/notices", label: "Notice ticker", soon: true },
       { href: "/admin/testimonials", label: "Testimonials", soon: true },
     ],
   },
-  { section: "Blog", items: [{ href: "/admin/posts", label: "Posts", soon: true }] },
+  { section: "Blog", items: [{ href: "/admin/posts", label: "Posts" }] },
   {
     section: "Library",
     items: [
-      { href: "/admin/media", label: "Media", soon: true },
+      { href: "/admin/media", label: "Media" },
       { href: "/admin/enquiries", label: "Enquiries", soon: true },
     ],
   },
@@ -40,6 +41,7 @@ function isActive(pathname: string, href: string) {
 
 export function AdminShell({ user, children }: { user: SessionUser; children: React.ReactNode }) {
   const pathname = usePathname();
+  const [loggingOut, startLogout] = useTransition();
 
   const title =
     NAV.flatMap((s) => s.items).find((i) => isActive(pathname, i.href))?.label ?? "Dashboard";
@@ -79,9 +81,16 @@ export function AdminShell({ user, children }: { user: SessionUser; children: Re
             <strong>{user.name}</strong>
             <span>{user.role}</span>
           </div>
-          <form action={logout}>
-            <button className="adm__logout" type="submit">
-              Log out
+          <form
+            action={() =>
+              startLogout(async () => {
+                await logout();
+                window.location.assign("/admin/login");
+              })
+            }
+          >
+            <button className="adm__logout" type="submit" disabled={loggingOut}>
+              {loggingOut ? "Logging out…" : "Log out"}
             </button>
           </form>
         </div>
