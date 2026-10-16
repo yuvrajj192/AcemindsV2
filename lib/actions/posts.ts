@@ -15,6 +15,15 @@ function text(fd: FormData, key: string, fallback = "") {
   return String(fd.get(key) ?? fallback).trim();
 }
 
+/** Strip the dangerous bits from admin-authored rich-text HTML. */
+function sanitizeRichHtml(html: string): string {
+  return html
+    .replace(/<\s*(script|style|iframe|object|embed|form)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi, "")
+    .replace(/<\s*\/?\s*(script|iframe|frame|object|embed|form)[^>]*>/gi, "")
+    .replace(/\son[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "")
+    .replace(/\s+javascript:/gi, "");
+}
+
 export type SaveResult = { ok: true; id: string } | { ok: false; error: string };
 
 export async function savePost(fd: FormData): Promise<SaveResult> {
@@ -25,11 +34,8 @@ export async function savePost(fd: FormData): Promise<SaveResult> {
     const slug = text(fd, "slug");
     if (!title || !slug) return { ok: false, error: "Title and slug are required." };
 
-    const bodyText = text(fd, "body");
-    const paragraphs = bodyText
-      .split(/\n{2,}/)
-      .map((p) => p.trim())
-      .filter(Boolean);
+    const bodyHtml = sanitizeRichHtml(text(fd, "bodyHtml"));
+    const hasBody = Boolean(bodyHtml) && bodyHtml !== "<p></p>";
     const status = text(fd, "status", "draft") === "published" ? "published" : "draft";
     const publishedAtRaw = text(fd, "publishedAt");
 
@@ -38,7 +44,7 @@ export async function savePost(fd: FormData): Promise<SaveResult> {
       cat: text(fd, "cat", "General"),
       title,
       excerpt: text(fd, "excerpt"),
-      body: paragraphs.length ? { paragraphs } : null,
+      body: hasBody ? { html: bodyHtml } : null,
       mediaId: text(fd, "mediaId") || null,
       colorHex: text(fd, "colorHex", "#2e7bea"),
       readTime: text(fd, "readTime", "4 min"),

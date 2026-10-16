@@ -12,7 +12,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
   ]);
   if (!row) notFound();
 
-  const body = row.body as { paragraphs?: string[] } | null;
+  const body = row.body as { html?: string; paragraphs?: string[] } | null;
   return (
     <PostForm
       initial={{
@@ -21,6 +21,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
         cat: row.cat,
         title: row.title,
         excerpt: row.excerpt,
+        bodyHtml: typeof body?.html === "string" ? body.html : null,
         bodyParagraphs: Array.isArray(body?.paragraphs) ? body!.paragraphs! : [],
         mediaId: row.mediaId,
         coverUrl: row.cover?.url ?? null,

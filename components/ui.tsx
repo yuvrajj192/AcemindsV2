@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import { Icon } from "./Icons";
 import { EnquiryForm } from "./EnquiryForm";
 import type { Course, SiteInfo } from "@/lib/types";
+import { toYouTubeEmbed } from "@/lib/youtube";
 
 /* ---------------------------------------------------------------------------
    Global UI: enquiry modal, video modal, floating actions and alert toast.
@@ -46,6 +47,7 @@ function Modal({ open, onClose, children, label, className = "" }: { open: boole
 
 function AlertToast({ site }: { site: SiteInfo }) {
   const [show, setShow] = useState(false);
+  const [nearFooter, setNearFooter] = useState(false);
   useEffect(() => {
     let seen = false;
     try { seen = sessionStorage.getItem("ace_toast") === "1"; } catch {}
@@ -53,16 +55,24 @@ function AlertToast({ site }: { site: SiteInfo }) {
     const t = setTimeout(() => setShow(true), 9000);
     return () => clearTimeout(t);
   }, []);
+  // hide while the site footer is on screen so it never covers contact details
+  useEffect(() => {
+    const footer = document.querySelector("footer.site-footer");
+    if (!footer || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([entry]) => setNearFooter(entry.isIntersecting), { threshold: 0.05 });
+    io.observe(footer);
+    return () => io.disconnect();
+  }, []);
   const close = () => {
     setShow(false);
     try { sessionStorage.setItem("ace_toast", "1"); } catch {}
   };
   return (
-    <div className={`toast${show ? " show" : ""}`} role="dialog" aria-live="polite" aria-label="Result alerts">
+    <div className={`toast${show && !nearFooter ? " show" : ""}`} role="dialog" aria-live="polite" aria-label="Result alerts">
       <span className="ico"><Icon.bell /></span>
       <div>
         <strong>Never miss a result</strong>
-        <p>Get exam dates, results &amp; scholarship alerts on WhatsApp.</p>
+        <p>Get exam dates, results &amp; topper alerts on WhatsApp.</p>
         <div className="toast-actions">
           <a className="btn btn-sm" href={`https://wa.me/${site.whatsapp}?text=${encodeURIComponent("Please add me to Ace Minds exam alerts")}`} target="_blank" rel="noopener" onClick={close}>Join alerts</a>
           <button className="btn btn-sm btn-ghost" type="button" onClick={close}>Later</button>
@@ -110,6 +120,7 @@ export function UIProvider({ children, site, courses }: { children: ReactNode; s
   const playVideo = useCallback((url: string) => setVideo(url), []);
   const closeEnq = useCallback(() => setEnq(null), []);
   const closeVideo = useCallback(() => setVideo(null), []);
+  const videoEmbed = toYouTubeEmbed(video || "");
 
   return (
     <Ctx.Provider value={{ enquire, playVideo }}>
@@ -124,7 +135,7 @@ export function UIProvider({ children, site, courses }: { children: ReactNode; s
             <li>Live class with IIT alumni faculty</li>
             <li>Free diagnostic test &amp; report</li>
             <li>One-on-one counselling session</li>
-            <li>Scholarship eligibility check</li>
+            <li>Fee &amp; batch planning</li>
           </ul>
         </div>
         <div className="modal-main">
@@ -135,9 +146,9 @@ export function UIProvider({ children, site, courses }: { children: ReactNode; s
       </Modal>
 
       <Modal open={!!video} onClose={closeVideo} label="Video" className="video-box">
-        {video && (
+        {videoEmbed && (
           <iframe
-            src={`${video}${video.includes("?") ? "&" : "?"}autoplay=1&rel=0`}
+            src={`${videoEmbed}${videoEmbed.includes("?") ? "&" : "?"}autoplay=1&rel=0`}
             title="Ace Minds video"
             allow="autoplay; encrypted-media; picture-in-picture"
             allowFullScreen

@@ -36,7 +36,11 @@ export function ImageCropper({
     if (!areaPx || areaPx.width < 1 || areaPx.height < 1) return;
     setCropErr("");
     try {
-      const resp = await fetch(src, { mode: "cors" });
+      /* R2 URLs go through the same-origin proxy: a direct cross-origin fetch can
+         hit the cached no-Origin `<img>` response (no ACAO) → "Failed to fetch". */
+      const media = src.match(/^https?:\/\/[^/]+\/(media\/[\w./-]+?)(?:[?#].*)?$/);
+      const fetchUrl = media ? `/api/media/file?key=${encodeURIComponent(media[1])}` : src;
+      const resp = await fetch(fetchUrl);
       if (!resp.ok) throw new Error(`Could not load image (${resp.status}).`);
       const bitmap = await createImageBitmap(await resp.blob());
       const scale = Math.min(1, MAX_DIM / Math.max(areaPx.width, areaPx.height));

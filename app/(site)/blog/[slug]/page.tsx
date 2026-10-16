@@ -35,11 +35,13 @@ export default async function PostPage({ params }: Props) {
           <article className="article">
             {p.img && <Image src={p.img} alt="" width={1672} height={941} style={{ borderRadius: "var(--radius-lg)", marginBottom: 28, boxShadow: "var(--shadow)", height: "auto" }} sizes="760px" priority />}
             <p style={{ fontSize: "1.25rem", color: "var(--ink)" }}>{p.excerpt}</p>
-            {p.paragraphs?.length ? (
+            {p.html ? (
+              /* sanitized in savePost() before it ever reaches the DB */
+              <div className="article__body" dangerouslySetInnerHTML={{ __html: p.html }} />
+            ) : p.paragraphs?.length ? (
               p.paragraphs.map((para, i) => <p key={i}>{para}</p>)
             ) : (
               <>
-                {/* TODO(Phase 4): render DB-stored Tiptap body once the Blog admin module ships. */}
                 <div className="callout"><strong>Editor&apos;s note:</strong> this article body is placeholder copy. Once the admin panel is live, posts are written and published from the Blog module.</div>
                 <h2>Why this matters</h2>
                 <p>Every season the exam calendar shifts a little, and students who plan around the real dates — not last year&apos;s — gain weeks of revision time. Here is what our faculty recommend.</p>

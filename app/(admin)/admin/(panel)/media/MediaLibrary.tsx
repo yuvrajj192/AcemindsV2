@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState, useCallback, useTransition } from "react";
+import { useEffect, useRef, useState, useCallback, useTransition } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { requestUpload, saveMedia, deleteMedia } from "@/lib/actions/media";
 
 type MediaItem = {
@@ -58,13 +59,19 @@ async function compressToWebp(file: File): Promise<Pick<Picked, "blob" | "width"
   return { blob, width, height, mimeType: "image/webp", filename: `${base}.webp` };
 }
 
-export function MediaLibrary({ initial }: { initial: MediaItem[] }) {
+export function MediaLibrary({ initial, q = "" }: { initial: MediaItem[]; q?: string }) {
+  const router = useRouter();
   const [items, setItems] = useState(initial);
   const [queue, setQueue] = useState<Picked[]>([]);
   const [drag, setDrag] = useState(false);
   const [err, setErr] = useState("");
+  const [query, setQuery] = useState(q);
   const inputRef = useRef<HTMLInputElement>(null);
   const [pending, startTransition] = useTransition();
+
+  // server search results arrive as new props — keep the grid in sync
+  useEffect(() => setItems(initial), [initial]);
+  useEffect(() => setQuery(q), [q]);
 
   const handleFiles = useCallback(async (files: FileList | File[]) => {
     setErr("");
@@ -152,6 +159,43 @@ export function MediaLibrary({ initial }: { initial: MediaItem[] }) {
 
   return (
     <div className="media">
+      <form
+        className="media__search"
+        onSubmit={(e) => {
+          e.preventDefault();
+          const term = query.trim();
+          router.push(term ? `/admin/media?q=${encodeURIComponent(term)}` : "/admin/media");
+        }}
+      >
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search by filename, alt or key…"
+          aria-label="Search media"
+        />
+        <button className="btn-s" type="submit">
+          Search
+        </button>
+        {q ? (
+          <button
+            className="btn-s"
+            type="button"
+            onClick={() => {
+              setQuery("");
+              router.push("/admin/media");
+            }}
+          >
+            Clear
+          </button>
+        ) : null}
+      </form>
+      {q ? (
+        <p className="media__search-note">
+          {items.length
+            ? `${items.length} result${items.length === 1 ? "" : "s"} for “${q}”`
+            : `No images match “${q}”.`}
+        </p>
+      ) : null}
       <div
         className={`media__drop${drag ? " is-drag" : ""}`}
         onDragOver={(e) => {

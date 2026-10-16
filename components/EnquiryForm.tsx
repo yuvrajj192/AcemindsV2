@@ -1,19 +1,17 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useTransition, type FormEvent } from "react";
+import { submitEnquiry } from "@/lib/actions/enquiries";
 import type { Course } from "@/lib/types";
 import { Icon } from "./Icons";
-
-/* Frontend-only: validates, then keeps the enquiry in localStorage
-   ("ace_enquiries") so the flow can be demoed. When the backend exists,
-   replace the marked block with a POST to /api/enquiries (admin + email
-   alert + Excel export live there). */
 
 type Props = { id: string; full?: boolean; cta?: string; source?: string; defaultCourse?: string; courses: Course[] };
 
 export function EnquiryForm({ id, full, cta = "Book my free demo class", source = "site", defaultCourse = "", courses }: Props) {
   const [sent, setSent] = useState(false);
   const [invalid, setInvalid] = useState<Record<string, boolean>>({});
+  const [err, setErr] = useState("");
+  const [pending, startTransition] = useTransition();
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,14 +28,14 @@ export function EnquiryForm({ id, full, cta = "Book my free demo class", source 
     setInvalid(bad);
     if (first) { first.focus(); return; }
 
-    const data = { ...Object.fromEntries(new FormData(form)), source, at: new Date().toISOString() };
-    // ---- replace with: await fetch("/api/enquiries", { method: "POST", body: JSON.stringify(data) }) ----
-    try {
-      const all = JSON.parse(localStorage.getItem("ace_enquiries") || "[]");
-      all.push(data);
-      localStorage.setItem("ace_enquiries", JSON.stringify(all));
-    } catch {}
-    setSent(true);
+    const fd = new FormData(form);
+    fd.set("source", source);
+    setErr("");
+    startTransition(async () => {
+      const res = await submitEnquiry(fd);
+      if (res.ok) setSent(true);
+      else setErr(res.error);
+    });
   };
 
   const clear = (name: string) => invalid[name] && setInvalid((v) => ({ ...v, [name]: false }));
@@ -98,7 +96,19 @@ export function EnquiryForm({ id, full, cta = "Book my free demo class", source 
           </>
         )}
         <div className="full">
-          <button className="btn btn-gold btn-block" type="submit">{cta} <Icon.arrow /></button>
+          {/* honeypot — bots fill it, humans never see it */}
+          <div className="hp" aria-hidden="true">
+            <label htmlFor={`${id}-hp`}>Leave this field empty</label>
+            <input id={`${id}-hp`} name="website" type="text" tabIndex={-1} autoComplete="off" defaultValue="" />
+          </div>
+          {err ? (
+            <p className="form-err" role="alert">
+              {err}
+            </p>
+          ) : null}
+          <button className="btn btn-gold btn-block" type="submit" disabled={pending}>
+            {pending ? "Sending…" : cta} <Icon.arrow />
+          </button>
         </div>
       </div>
       <p className="form-note">We&apos;ll call within 24 hours. No spam — your details stay with Ace Minds.</p>

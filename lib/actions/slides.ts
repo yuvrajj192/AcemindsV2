@@ -5,6 +5,7 @@ import { updateTag } from "next/cache";
 import { eq } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 import { getSession } from "@/lib/session";
+import { toYouTubeEmbed } from "@/lib/youtube";
 
 async function requireStaff() {
   const user = await getSession();
@@ -25,11 +26,13 @@ export async function saveSlide(fd: FormData): Promise<SaveResult> {
     const title = text(fd, "title");
     if (!kicker || !title) return { ok: false, error: "Kicker and title are required." };
 
+    const rawVideo = text(fd, "videoUrl");
+
     const values = {
       mediaId: text(fd, "mediaId") || null,
       kicker,
       title,
-      videoUrl: text(fd, "videoUrl"),
+      videoUrl: rawVideo ? toYouTubeEmbed(rawVideo) : "",
       sortOrder: Number(fd.get("sortOrder") || 0),
       published: fd.get("published") === "on",
     };

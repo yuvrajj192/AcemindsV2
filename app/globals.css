@@ -189,10 +189,10 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 .header-cta { display: flex; align-items: center; gap: 10px; }
 .call-chip { display: flex; align-items: center; gap: 10px; padding-right: 6px; }
-.call-chip .ico { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--cream-200); color: var(--navy-900); }
+.call-chip .ico { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--cream-200); color: var(--navy-900); flex: none; }
 .call-chip .ico svg { width: 18px; height: 18px; }
-.call-chip small { display: block; font-size: 0.72rem; color: var(--muted); line-height: 1; }
-.call-chip strong { font-size: 0.95rem; }
+.call-chip small { display: block; font-size: 0.72rem; color: var(--muted); line-height: 1; white-space: nowrap; }
+.call-chip strong { font-size: 0.95rem; white-space: nowrap; }
 .menu-toggle { display: none; width: 46px; height: 46px; border-radius: 12px; background: var(--navy-900); color: var(--white); place-items: center; }
 .menu-toggle span, .menu-toggle span::before, .menu-toggle span::after { display: block; width: 20px; height: 2px; border-radius: 2px; background: currentColor; position: relative; transition: 0.3s var(--ease); }
 .menu-toggle span::before, .menu-toggle span::after { content: ""; position: absolute; left: 0; }
@@ -330,10 +330,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   display: grid; grid-template-columns: repeat(4, 1fr); background: var(--white); border-radius: var(--radius-lg);
   box-shadow: var(--shadow); overflow: hidden; border: 1px solid var(--line);
 }
-.stat { padding: 28px 26px; display: flex; gap: 16px; align-items: center; position: relative; }
+.stat { padding: 28px 26px; position: relative; }
 .stat + .stat::before { content: ""; position: absolute; left: 0; top: 24%; bottom: 24%; width: 1px; background: var(--line); }
-.stat-ico { width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; flex: none; background: var(--cream-200); color: var(--navy-900); }
-.stat-ico svg { width: 26px; height: 26px; }
 .stat strong { font-family: var(--font-display); font-weight: 400; font-size: 2.4rem; line-height: 1; display: block; color: var(--navy-900); }
 .stat strong sup { font-size: 0.55em; color: var(--gold-600); top: -0.6em; }
 .stat span { font-size: 0.88rem; color: var(--muted); line-height: 1.3; display: block; margin-top: 4px; }
@@ -366,7 +364,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip-group input { position: absolute; opacity: 0; pointer-events: none; }
 .chip-group label {
-  padding: 9px 18px; border-radius: 999px; border: 1.5px solid var(--line); font-weight: 600; font-size: 0.92rem; cursor: pointer;
+  display: inline-block; padding: 9px 18px; border-radius: 999px; border: 1.5px solid var(--line); font-weight: 600; font-size: 0.92rem; cursor: pointer;
   transition: all 0.2s; background: var(--cream-50);
 }
 .chip-group label:hover { border-color: var(--navy-700); }
@@ -625,9 +623,16 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 /* article */
 .article { max-width: 760px; margin-inline: auto; }
-.article h2 { font-size: 1.7rem; margin-top: 1.6em; }
-.article p, .article li { font-size: 1.08rem; color: var(--ink-soft); }
-.article ul { list-style: disc; padding-left: 1.3em; margin-bottom: 1em; }
+.article h2, .article__body h2 { font-size: 1.7rem; margin-top: 1.6em; }
+.article h3, .article__body h3 { font-size: 1.3rem; margin-top: 1.4em; }
+.article p, .article li, .article__body p, .article__body li { font-size: 1.08rem; color: var(--ink-soft); }
+.article ul, .article__body ul { list-style: disc; padding-left: 1.3em; margin-bottom: 1em; }
+.article ol, .article__body ol { list-style: decimal; padding-left: 1.4em; margin-bottom: 1em; }
+.article__body a, .article a:not(.btn) { color: var(--blue-600, #2e7bea); text-decoration: underline; text-underline-offset: 3px; }
+.article__body blockquote, .article blockquote { border-left: 4px solid var(--gold-500); background: var(--cream-100); margin: 24px 0; padding: 14px 20px; font-style: italic; }
+.article__body hr { border: none; border-top: 1px solid var(--line); margin: 2em 0; }
+.article__body code { background: var(--cream-100); border: 1px solid var(--line); border-radius: 5px; font-size: 0.92em; padding: 1px 6px; }
+.article__body img { border-radius: var(--radius-lg); max-width: 100%; height: auto; }
 .article .callout { background: var(--cream-100); border-left: 5px solid var(--gold-500); border-radius: 0 var(--radius) var(--radius) 0; padding: 18px 22px; margin: 24px 0; }
 
 /* ---------- CTA band ---------- */
@@ -655,6 +660,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 .field .err { color: var(--red-500); font-size: 0.78rem; font-weight: 600; display: none; }
 .field.invalid .err { display: block; }
 .form-note { font-size: 0.8rem; color: var(--muted); margin-top: 10px; }
+.form-err { margin: 0 0 10px; padding: 9px 12px; border: 1px solid var(--red-500); border-radius: 8px; background: rgba(214, 69, 69, 0.07); color: var(--red-500); font-size: 0.86rem; font-weight: 600; }
+.hp { position: absolute; left: -5000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
 .form-success { display: none; text-align: center; padding: 30px 10px; }
 .form-success .tick { width: 74px; height: 74px; border-radius: 50%; background: var(--gold-500); color: var(--navy-900); display: grid; place-items: center; margin: 0 auto 16px; animation: pop 0.5s var(--ease); }
 .form-success .tick svg { width: 36px; height: 36px; }
@@ -845,9 +852,8 @@ body.lock { overflow: hidden; }
   .formula-chip.f2 { display: none; }
   .exam-pill { letter-spacing: 0.14em; padding: 10px 18px; font-size: 0.9rem; }
   .stats-band { margin-top: -40px; }
-  .stat { padding: 20px 16px; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .stat { padding: 20px 16px; }
   .stat strong { font-size: 2rem; }
-  .stat-ico { width: 44px; height: 44px; }
   .course-grid, .blog-grid, .poster-grid, .values-grid, .faculty-grid, .wall-grid { grid-template-columns: 1fr; }
   .faculty-grid, .wall-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
   .fac-body { padding: 14px; }

@@ -45,7 +45,7 @@ export function Footer({ site: S, categories }: { site: SiteInfo; categories: Ca
         </div>
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} Ace Minds Private Tutorials · {S.domain}</span>
-          <span><Link href="/contact">Careers</Link> &nbsp;·&nbsp; <Link href="/admissions#scholarship">Scholarships</Link> &nbsp;·&nbsp; <Link href="/blog">Exam news</Link></span>
+          <span><Link href="/contact">Careers</Link> &nbsp;·&nbsp; <Link href="/admissions">Admissions</Link> &nbsp;·&nbsp; <Link href="/blog">Exam news</Link></span>
         </div>
       </div>
       <div className="footer-ghost" aria-hidden="true">ACE MINDS</div>

@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ImagePicker, type PickedMedia } from "@/components/admin/ImagePicker";
+import { RichText } from "@/components/admin/RichText";
 import { savePost } from "@/lib/actions/posts";
 
 const NEW_CAT = "__new__";
@@ -14,6 +15,7 @@ type PostRow = {
   cat: string;
   title: string;
   excerpt: string;
+  bodyHtml: string | null;
   bodyParagraphs: string[];
   mediaId: string | null;
   coverUrl: string | null;
@@ -23,10 +25,20 @@ type PostRow = {
   publishedAt: string | null;
 };
 
+/** Legacy { paragraphs } bodies → editor HTML (text is escaped). */
+function paragraphsToHtml(paras: string[]): string {
+  const esc = (s: string) =>
+    s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  return paras.map((p) => `<p>${esc(p)}</p>`).join("");
+}
+
 export function PostForm({ initial, categories }: { initial: PostRow | null; categories: string[] }) {
   const router = useRouter();
   const [img, setImg] = useState<PickedMedia | null>(
     initial?.mediaId && initial.coverUrl ? { id: initial.mediaId, url: initial.coverUrl } : null
+  );
+  const [bodyHtml, setBodyHtml] = useState(
+    initial?.bodyHtml ?? paragraphsToHtml(initial?.bodyParagraphs ?? [])
   );
   const [err, setErr] = useState("");
   const [pending, startTransition] = useTransition();
@@ -44,6 +56,7 @@ export function PostForm({ initial, categories }: { initial: PostRow | null; cat
     setErr("");
     fd.set("cat", catChoice === NEW_CAT ? newCat.trim() || "General" : catChoice);
     fd.set("mediaId", img?.id ?? "");
+    fd.set("bodyHtml", bodyHtml);
     if (initial) fd.set("id", initial.id);
     startTransition(async () => {
       const res = await savePost(fd);
@@ -95,10 +108,10 @@ export function PostForm({ initial, categories }: { initial: PostRow | null; cat
           <span>Excerpt</span>
           <textarea name="excerpt" rows={2} defaultValue={initial?.excerpt} />
         </label>
-        <label className="frm__field frm__field--full">
-          <span>Body — one paragraph per blank line</span>
-          <textarea name="body" rows={14} defaultValue={initial?.bodyParagraphs.join("\n\n")} />
-        </label>
+        <div className="frm__field frm__field--full">
+          <span>Body</span>
+          <RichText initialHtml={bodyHtml} onChange={setBodyHtml} />
+        </div>
         <label className="frm__field">
           <span>Read time</span>
           <input name="readTime" defaultValue={initial?.readTime ?? "4 min"} />

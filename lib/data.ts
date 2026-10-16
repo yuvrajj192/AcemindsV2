@@ -37,7 +37,6 @@ export const ACE: SiteData = {
   // Rolling exam/news ticker
   notices: [
     { text: "Admissions open for 2026–28 JEE / NEET two-year batch", href: "/admissions" },
-    { text: "ACE-SAT scholarship test on Sunday — up to 90% fee waiver", href: "/admissions#scholarship" },
     { text: "JEE Main 2027 session-1 dates announced — read the analysis", href: "/blog" },
     { text: "Free Physics demo class every Saturday with Deepak Sir", href: "/contact" },
     { text: "New crash course for MHT-CET starting next month", href: "/courses?cat=cet" }
@@ -166,9 +165,9 @@ export const ACE: SiteData = {
 
   // Posters / announcements (admin: Posters)
   posters: [
-    { theme: "p-gold", date: "Every Sunday", title: "ACE-SAT Scholarship Test", text: "Win up to 90% fee waiver on 2026–28 batches.", cta: "Register free", href: "/admissions#scholarship", deco: "%" },
     { theme: "p-navy", date: "Saturdays · 11 AM", title: "Free Physics Demo", text: "Sit in a live class with Deepak Sir before you join.", cta: "Book a seat", href: "#enquire", deco: "P" },
-    { theme: "p-cream", date: "Starting soon", title: "CET Crash Course", text: "45 days · 15 full mocks · formula booklet included.", cta: "View course", href: "/courses?cat=cet", deco: "45" }
+    { theme: "p-cream", date: "Starting soon", title: "CET Crash Course", text: "45 days · 15 full mocks · formula booklet included.", cta: "View course", href: "/courses?cat=cet", deco: "45" },
+    { theme: "p-gold", date: "2026–28 batches", title: "Admissions Open", text: "Small batches, IIT alumni mentors — seats filling fast.", cta: "Enquire now", href: "/admissions", deco: "%" }
   ],
 
   // FAQs (admin: FAQs)
@@ -176,7 +175,6 @@ export const ACE: SiteData = {
     { q: "What is the batch size at Ace Minds?", a: "We cap every classroom batch at 25–35 students depending on the course, so each student gets individual attention and faculty know every student by name." },
     { q: "Who teaches at Ace Minds?", a: "Ace Minds is an IIT alumni initiative. Core subjects are taught by IIT / NIT / AIIMS alumni with 7–10+ years of teaching experience, led by Deepak Rana Sir (IIT Bombay) for Physics." },
     { q: "Can I attend a demo class before taking admission?", a: "Yes. Free demo classes run every Saturday. Fill the enquiry form or call us and we will reserve a seat for you." },
-    { q: "Do you offer scholarships?", a: "Yes — through the ACE-SAT scholarship test held every Sunday during admission season. Scholarships go up to 90% of tuition based on your score. Board and Olympiad performance are also considered." },
     { q: "How are parents kept updated?", a: "Parents receive test results after every weekly test, a monthly progress report and are invited to parent-teacher meets every month." },
     { q: "Is there an online / hybrid option?", a: "Select courses (One-Year Target and CET Crash Course) have a hybrid mode with live online classes, recorded backups and the same test series." }
   ],

@@ -97,13 +97,12 @@ export default async function Home() {
         <div className="container">
           <Reveal className="stats-grid">
             {[
-              { ico: <Icon.cap />, v: 10, s: "+", l: "Years of IIT-grade teaching" },
-              { ico: <Icon.users />, v: 2500, s: "+", l: "Students mentored" },
-              { ico: <Icon.trophy />, v: 340, s: "+", l: "Students above 95 percentile" },
-              { ico: <Icon.target />, v: 30, s: "", l: "Max students per batch" },
+              { v: 10, s: "+", l: "Years of IIT-grade teaching" },
+              { v: 2500, s: "+", l: "Students mentored" },
+              { v: 340, s: "+", l: "Students above 95 percentile" },
+              { v: 30, s: "", l: "Max students per batch" },
             ].map((x) => (
               <div className="stat" key={x.l}>
-                <span className="stat-ico">{x.ico}</span>
                 <div><Counter value={x.v} suffix={x.s} /><span>{x.l}</span></div>
               </div>
             ))}
@@ -299,7 +298,7 @@ export default async function Home() {
           <Reveal className="faq-aside">
             <span className="eyebrow">FAQs</span>
             <h2 className="display section-title">Questions parents <span className="tag">ask us</span></h2>
-            <p style={{ color: "var(--ink-soft)" }}>Everything about batches, fees, scholarships and demo classes.</p>
+            <p style={{ color: "var(--ink-soft)" }}>Everything about batches, fees, demo classes and timings.</p>
             <div className="help-card on-dark">
               <h4>Still have a question?</h4>
               <p>Talk to an academic counsellor — free, no obligation.</p>
@@ -328,11 +327,11 @@ export default async function Home() {
             <div>
               <span className="hand">Your seat is waiting</span>
               <h2 className="display">Admissions open for <span className="nowrap" style={{ color: "var(--gold-400)" }}>2026–28</span></h2>
-              <p>Take the ACE-SAT scholarship test, attend a free demo and get a personalised study plan from an IIT alumnus.</p>
+              <p>Attend a free demo class and get a personalised study plan from an IIT alumnus.</p>
             </div>
             <div className="cta-actions">
               <EnquireButton className="btn">Book a free demo</EnquireButton>
-              <Link className="btn btn-ghost" href="/admissions#scholarship">Register for ACE-SAT</Link>
+              <Link className="btn btn-ghost" href="/admissions">How to apply</Link>
             </div>
           </Reveal>
         </div>

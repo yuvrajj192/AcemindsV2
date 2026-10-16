@@ -25,6 +25,7 @@ const TAGS = {
   notices: "notices",
   posts: "posts",
   media: "media",
+  enquiries: "enquiries",
 } as const;
 
 const REVALIDATE = 3600;
@@ -283,7 +284,7 @@ export const getPostBySlug = (slug: string) =>
         with: { cover: true },
       });
       if (!r || r.status !== "published") return null;
-      const body = r.body as { paragraphs?: string[] } | null;
+      const body = r.body as { html?: string; paragraphs?: string[] } | null;
       return {
         slug: r.slug,
         cat: r.cat,
@@ -293,6 +294,7 @@ export const getPostBySlug = (slug: string) =>
         excerpt: r.excerpt,
         color: r.colorHex,
         img: r.cover?.url,
+        html: typeof body?.html === "string" ? body.html : undefined,
         paragraphs: Array.isArray(body?.paragraphs) ? body!.paragraphs! : undefined,
       };
     },

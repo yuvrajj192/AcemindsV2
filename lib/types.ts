@@ -20,7 +20,7 @@ export interface Faculty { name: string; role: string; edu: string; exp: string;
 export interface Pillar { icon: "target" | "cap" | "clipboard" | "heart"; title: string; text: string }
 export interface Poster { theme: "p-gold" | "p-navy" | "p-cream"; date: string; title: string; text: string; cta: string; href: string; deco: string }
 export interface Faq { q: string; a: string }
-export interface Post { slug: string; cat: string; date: string; read: string; title: string; excerpt: string; color: string; img?: string; paragraphs?: string[] }
+export interface Post { slug: string; cat: string; date: string; read: string; title: string; excerpt: string; color: string; img?: string; html?: string; paragraphs?: string[] }
 
 export interface SiteInfo {
   name: string; tagline: string; initiative: string; domain: string; phone: string; phoneRaw: string; whatsapp: string;

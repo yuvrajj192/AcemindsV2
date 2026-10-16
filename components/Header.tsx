@@ -16,7 +16,7 @@ const why = [
 
 const mobile = [
   ["/", "Home"], ["/courses", "Courses"], ["/results", "Results"], ["/faculty", "Faculty"], ["/admissions", "Admissions"],
-  ["/testimonials", "Testimonials"], ["/about", "About"], ["/blog", "Blog"], ["/contact", "Contact"],
+  ["/faq", "FAQ"], ["/testimonials", "Testimonials"], ["/about", "About"], ["/blog", "Blog"], ["/contact", "Contact"],
 ];
 
 export function Header({ site: S, categories }: { site: SiteInfo; categories: Category[] }) {
@@ -47,7 +47,6 @@ export function Header({ site: S, categories }: { site: SiteInfo; categories: Ca
           <div className="topbar-note">
             <span className="pulse-dot" />
             <span>Admissions open · 2026–28 batches</span>
-            <span className="hide-sm">&nbsp;·&nbsp;<Link href="/admissions#scholarship"><u>ACE-SAT scholarship test</u></Link></span>
           </div>
           <div className="topbar-links">
             <a href={`tel:${S.phoneRaw}`}><Icon.phone />{S.phone}</a>
@@ -65,6 +64,7 @@ export function Header({ site: S, categories }: { site: SiteInfo; categories: Ca
           </Link>
 
           <nav className="main-nav" aria-label="Primary">
+            <Link href="/" {...active("/")}>Home</Link>
             <div className="nav-drop">
               <button type="button" aria-haspopup="true">Why Ace Minds <Icon.down /></button>
               <div className="drop-panel">
@@ -91,6 +91,7 @@ export function Header({ site: S, categories }: { site: SiteInfo; categories: Ca
             <Link href="/results" {...active("/results")}>Results</Link>
             <Link href="/admissions" {...active("/admissions")}>Admissions</Link>
             <Link href="/admissions#counselling">Counselling</Link>
+            <Link href="/faq" {...active("/faq")}>FAQ</Link>
             <Link href="/blog" {...active("/blog")}>Blog</Link>
             <Link href="/contact" {...active("/contact")}>Contact</Link>
           </nav>

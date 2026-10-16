@@ -29,10 +29,10 @@ const NAV: NavSection[] = [
     section: "Library",
     items: [
       { href: "/admin/media", label: "Media" },
-      { href: "/admin/enquiries", label: "Enquiries", soon: true },
+      { href: "/admin/enquiries", label: "Enquiries" },
     ],
   },
-  { section: "System", items: [{ href: "/admin/settings", label: "Settings", soon: true }] },
+  { section: "System", items: [{ href: "/admin/settings", label: "Settings" }] },
 ];
 
 function isActive(pathname: string, href: string) {

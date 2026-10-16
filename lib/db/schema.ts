@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { boolean, integer, jsonb, numeric, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { boolean, index, integer, jsonb, numeric, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 /* Every content table shares this tail. */
 const stamps = {
@@ -188,6 +188,44 @@ export const posts = pgTable("posts", {
   authorId: uuid("author_id").references(() => users.id, { onDelete: "set null" }),
   ...stamps,
 });
+
+/* Page-visit analytics (written from proxy.ts via waitUntil). */
+export const pageViews = pgTable(
+  "page_views",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    path: text("path").notNull(),
+    visitor: text("visitor").notNull(),
+    referrer: text("referrer").notNull().default(""),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    index("page_views_created_at_idx").on(t.createdAt),
+    index("page_views_path_created_at_idx").on(t.path, t.createdAt),
+  ]
+);
+
+/* Lead capture — written from the public EnquiryForm (contact, admissions,
+   floating modal) via submitEnquiry; status managed in /admin/enquiries. */
+export const enquiries = pgTable(
+  "enquiries",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    name: text("name").notNull(),
+    phone: text("phone").notNull(),
+    studentClass: text("student_class"),
+    course: text("course"),
+    email: text("email"),
+    message: text("message"),
+    source: text("source").notNull().default("site"),
+    status: text("status", { enum: ["new", "read", "replied"] }).notNull().default("new"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    index("enquiries_created_at_idx").on(t.createdAt),
+    index("enquiries_status_created_at_idx").on(t.status, t.createdAt),
+  ]
+);
 
 export const siteSettings = pgTable("site_settings", {
   id: text("id").primaryKey(),

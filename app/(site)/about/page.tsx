@@ -48,7 +48,7 @@ export default async function AboutPage() {
               ["2018", "Chemistry & Maths faculty from IIT and NIT join."],
               ["2020", "NEET and MHT-CET programs launched; free YouTube lectures begin."],
               ["2023", "Foundation program for Class 8–10."],
-              ["2026", "New campus and ACE-SAT scholarship test."],
+              ["2026", "New campus and online test series launched."],
             ].map(([y, t]) => <li key={y}><b>{y}</b><p>{t}</p></li>)}
           </Reveal>
         </div>

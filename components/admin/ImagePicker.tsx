@@ -53,8 +53,13 @@ export function ImagePicker({
   }, []);
 
   useEffect(() => {
-    if (open && tab === "library" && !rows.length && !loading) void load("");
-  }, [open, tab, rows.length, loading, load]);
+    if (!open || tab !== "library") return;
+    /* Live search with a short debounce; immediate when the box is cleared.
+       (Replaces an old effect that refetched the full library whenever a
+       search returned 0 rows — which made search appear broken.) */
+    const t = setTimeout(() => void load(q), q ? 250 : 0);
+    return () => clearTimeout(t);
+  }, [open, tab, q, load]);
 
   useEffect(() => {
     return () => {
@@ -219,14 +224,16 @@ export function ImagePicker({
                   placeholder="Search filename or alt…"
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") void load(q);
-                  }}
+                  aria-label="Search media"
                 />
                 {err ? <p className="media__err">{err}</p> : null}
                 <div className="ip__grid">
-                  {loading ? <p className="media__empty">Loading…</p> : null}
-                  {!loading && !rows.length ? <p className="media__empty">Library is empty — upload something first.</p> : null}
+                  {loading ? <p className="media__empty">Searching…</p> : null}
+                  {!loading && !rows.length ? (
+                    <p className="media__empty">
+                      {q ? `No images match “${q}”.` : "Library is empty — upload something first."}
+                    </p>
+                  ) : null}
                   {rows.map((m) => (
                     <button
                       type="button"
