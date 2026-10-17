@@ -3,7 +3,6 @@ import Link from "next/link";
 import { count } from "drizzle-orm";
 import type { AnyPgTable } from "drizzle-orm/pg-core";
 import { db, schema } from "@/lib/db";
-import { getSession } from "@/lib/session";
 import { getEnquiryStats, getTrafficStats } from "@/lib/admin-queries";
 
 export const metadata: Metadata = { title: "Dashboard", robots: { index: false, follow: false } };
@@ -84,14 +83,13 @@ function greeting(h: number): string {
 }
 
 export default async function AdminDashboard() {
-  const [user, c, t, s] = await Promise.all([getSession(), counts(), getTrafficStats(), getEnquiryStats()]);
+  const [c, t, s] = await Promise.all([counts(), getTrafficStats(), getEnquiryStats()]);
   const d = delta(t.week, t.prevWeek);
   const ld = delta(s.week, s.prevWeek);
   const maxDay = Math.max(1, ...t.series.map((s) => s.views));
   const maxPath = Math.max(1, ...t.topPaths.map((p) => p.views));
   const maxRef = Math.max(1, ...t.topReferrers.map((r) => r.views));
   const now = new Date();
-  const firstName = (user?.name || "there").split(" ")[0];
   const dateStr = now.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
   return (
@@ -100,9 +98,7 @@ export default async function AdminDashboard() {
         <div className="dash__hero-glow" aria-hidden="true" />
         <div className="dash__hero-main">
           <span className="dash__eyebrow">Overview</span>
-          <h2>
-            {greeting(now.getHours())}, {firstName}
-          </h2>
+          <h2>{greeting(now.getHours())}</h2>
           <p>{dateStr} · here&apos;s how aceminds.in is doing today.</p>
         </div>
         <div className="dash__hero-chips">
