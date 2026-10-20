@@ -22,7 +22,7 @@ type FacultyRow = {
   published: boolean;
 };
 
-export function FacultyForm({ initial }: { initial: FacultyRow | null }) {
+export function FacultyForm({ initial, founder = false }: { initial: FacultyRow | null; founder?: boolean }) {
   const router = useRouter();
   const [img, setImg] = useState<PickedMedia | null>(
     initial?.mediaId && initial.photoUrl ? { id: initial.mediaId, url: initial.photoUrl } : null
@@ -38,15 +38,19 @@ export function FacultyForm({ initial }: { initial: FacultyRow | null }) {
     startTransition(async () => {
       const res = await saveFaculty(fd);
       if (!res.ok) setErr(res.error);
-      else router.push("/admin/faculty");
+      else router.push(founder ? "/admin/founders" : "/admin/faculty");
     });
   };
 
   return (
     <form className="frm" action={onSubmit}>
       <div className="frm__top">
-        <Link className="frm__back" href="/admin/faculty">← Back to faculty</Link>
-        <span className="frm__hint">{initial ? "Editing faculty" : "New faculty member"}</span>
+        <Link className="frm__back" href={founder ? "/admin/founders" : "/admin/faculty"}>
+          {founder ? "← Back to founders" : "← Back to faculty"}
+        </Link>
+        <span className="frm__hint">
+          {founder ? (initial ? "Editing founder" : "New founder") : initial ? "Editing faculty" : "New faculty member"}
+        </span>
       </div>
       {err ? <p className="frm__err">{err}</p> : null}
       <div className="frm__grid">
@@ -59,8 +63,8 @@ export function FacultyForm({ initial }: { initial: FacultyRow | null }) {
           <input name="role" defaultValue={initial?.role} placeholder="Physics Faculty" required />
         </label>
         <label className="frm__field">
-          <span>Subject *</span>
-          <input name="subject" defaultValue={initial?.subject} placeholder="Physics" required />
+          <span>Subject{founder ? "" : " *"}</span>
+          <input name="subject" defaultValue={initial?.subject} placeholder={founder ? "Physics (optional)" : "Physics"} required={!founder} />
         </label>
         <label className="frm__field">
           <span>Education</span>
@@ -85,7 +89,7 @@ export function FacultyForm({ initial }: { initial: FacultyRow | null }) {
         <div className="frm__field">
           <span className="frm__checks">
             <label>
-              <input name="isFounder" type="checkbox" defaultChecked={initial?.isFounder} /> ★ Founder
+              <input name="isFounder" type="checkbox" defaultChecked={founder || initial?.isFounder} /> ★ Founder
             </label>
             <label>
               <input name="published" type="checkbox" defaultChecked={initial ? initial.published : true} /> Published

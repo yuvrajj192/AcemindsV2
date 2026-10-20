@@ -52,7 +52,7 @@ export function FacultyCard({ f }: { f: Faculty }) {
   return (
     <article className="fac-card">
       <div className="fac-photo">
-        {f.img ? <Image src={f.img} alt={f.name} fill sizes="(max-width: 760px) 50vw, 25vw" /> : <span className="initials">{f.subject.slice(0, 2).toUpperCase()}</span>}
+        {f.img ? <Image src={f.img} alt={f.name} fill sizes="(max-width: 760px) 50vw, 25vw" /> : <span className="initials">{(f.subject || f.name).slice(0, 2).toUpperCase()}</span>}
         <span className="badge gold subj">{f.subject}</span>
       </div>
       <div className="fac-body">

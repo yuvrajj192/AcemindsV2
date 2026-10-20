@@ -519,8 +519,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 /* ---------- Faculty ---------- */
 .faculty-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-.founders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 24px; }
-.fac-card { position: relative; border-radius: var(--radius-lg); overflow: hidden; background: var(--white); border: 1px solid var(--line); transition: transform 0.4s var(--ease), box-shadow 0.4s; }
+.founders-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 340px)); gap: 24px; justify-content: center; }
+.fac-card { position: relative; border-radius: var(--radius-lg); overflow: hidden; background: var(--white); border: 1px solid var(--line); color: var(--navy-900); transition: transform 0.4s var(--ease), box-shadow 0.4s; }
 .fac-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
 .fac-photo { position: relative; aspect-ratio: 4 / 4.4; background: linear-gradient(135deg, var(--cream-200) 55%, var(--navy-900) 55.2%); overflow: hidden; }
 .fac-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center top; transition: transform 0.8s var(--ease); }
@@ -536,7 +536,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .fac-body .role { color: var(--blue-500); font-weight: 700; font-size: 0.9rem; }
 .fac-body p { color: var(--ink-soft); font-size: 0.88rem; margin: 10px 0 0; }
 .fac-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
-.fac-tags span { font-size: 0.74rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--cream-100); border: 1px solid var(--line); }
+.fac-tags span { font-size: 0.74rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--cream-100); border: 1px solid var(--line); color: var(--ink-soft); }
 
 /* ---------- Process / journey ---------- */
 .journey { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; counter-reset: step; position: relative; }

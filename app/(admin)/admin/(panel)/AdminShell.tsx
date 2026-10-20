@@ -17,6 +17,7 @@ const NAV: NavSection[] = [
       { href: "/admin/courses", label: "Courses" },
       { href: "/admin/toppers", label: "Toppers & Results" },
       { href: "/admin/faculty", label: "Faculty" },
+      { href: "/admin/founders", label: "Founders" },
       { href: "/admin/slides", label: "Sliders" },
       { href: "/admin/posters", label: "Posters" },
       { href: "/admin/faqs", label: "FAQs" },
