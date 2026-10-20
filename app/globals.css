@@ -778,6 +778,9 @@ body.lock { overflow: hidden; }
 .footer-contact svg { width: 18px; height: 18px; color: var(--gold-400); flex: none; margin-top: 4px; }
 .footer-bottom { margin-top: 60px; padding: 22px 0; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 0.85rem; position: relative; }
 .footer-bottom a:hover { color: var(--gold-400); }
+.footer-credit { position: relative; margin: -6px 0 10px; text-align: center; font-size: 0.82rem; color: rgba(255, 255, 255, 0.5); }
+.footer-credit a { color: var(--gold-400); font-weight: 700; text-decoration: none; }
+.footer-credit a:hover { text-decoration: underline; }
 
 /* ---------- Reveal animation ---------- */
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.9s var(--ease), transform 0.9s var(--ease); }

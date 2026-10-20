@@ -47,6 +47,10 @@ export function Footer({ site: S, categories }: { site: SiteInfo; categories: Ca
           <span>© {new Date().getFullYear()} Ace Minds Private Tutorials · {S.domain}</span>
           <span><Link href="/contact">Careers</Link> &nbsp;·&nbsp; <Link href="/admissions">Admissions</Link> &nbsp;·&nbsp; <Link href="/blog">Exam news</Link></span>
         </div>
+        <p className="footer-credit">
+          Designed by Yuvraj from{" "}
+          <a href="https://devpixels.in" target="_blank" rel="noopener noreferrer">Devpixels</a>
+        </p>
       </div>
       <div className="footer-ghost" aria-hidden="true">ACE MINDS</div>
     </footer>
