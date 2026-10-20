@@ -1132,6 +1132,12 @@ a.dash__chip:hover {
   vertical-align: middle;
 }
 
+.tbl__tag--gold {
+  margin-left: 0;
+  background: rgba(224, 165, 22, 0.16);
+  color: #9a7104;
+}
+
 .tbl__row-actions {
   display: flex;
   gap: 6px;

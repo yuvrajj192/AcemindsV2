@@ -85,12 +85,13 @@ export function FacultyForm({ initial }: { initial: FacultyRow | null }) {
         <div className="frm__field">
           <span className="frm__checks">
             <label>
-              <input name="isFounder" type="checkbox" defaultChecked={initial?.isFounder} /> Founder
+              <input name="isFounder" type="checkbox" defaultChecked={initial?.isFounder} /> ★ Founder
             </label>
             <label>
               <input name="published" type="checkbox" defaultChecked={initial ? initial.published : true} /> Published
             </label>
           </span>
+          <small>Founders get their own section right after “Our story” on the About page — everyone else shows under “The team”.</small>
         </div>
         <div className="frm__field frm__field--full">
           <ImagePicker value={img} onChange={setImg} label="Photo" aspect={4 / 4.4} aspectLabel="4:4.4 portrait" />

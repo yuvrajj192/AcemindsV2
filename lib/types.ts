@@ -16,7 +16,7 @@ export interface Stat { value: number; suffix: string; label: string }
 export interface VideoStory { name: string; batch: string; headline: string; lines: string[]; video: string }
 export interface Letter { name: string; tag: string; text: string }
 export interface Review { name: string; role: string; when: string; text: string }
-export interface Faculty { name: string; role: string; edu: string; exp: string; subject: string; img?: string; tags: string[]; bio: string }
+export interface Faculty { name: string; role: string; edu: string; exp: string; subject: string; img?: string; tags: string[]; bio: string; founder?: boolean }
 export interface Pillar { icon: "target" | "cap" | "clipboard" | "heart"; title: string; text: string }
 export interface Poster { theme: "p-gold" | "p-navy" | "p-cream"; date: string; title: string; text: string; cta: string; href: string; deco: string }
 export interface Faq { q: string; a: string }

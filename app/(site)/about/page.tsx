@@ -14,6 +14,8 @@ export const metadata: Metadata = {
 
 export default async function AboutPage() {
   const [site, faculty] = await Promise.all([getSiteSettings(), getFaculty()]);
+  const founders = faculty.filter((f) => f.founder);
+  const team = faculty.filter((f) => !f.founder);
   return (
     <>
       <PageHero crumb="About" title={<>An <span className="gold">IIT alumni</span> initiative</>} text="We started Ace Minds to give students the kind of teaching we wished we had — clear, patient and relentlessly concept-first." big="AM" hand={`since ${site.founded}`} />
@@ -30,6 +32,17 @@ export default async function AboutPage() {
           </Reveal>
         </div>
       </section>
+
+      {/* ================= FOUNDERS ================= */}
+      {founders.length > 0 && (
+        <section className="section section-navy on-dark" id="founders">
+          <div className="container">
+            <SectionHead eyebrow="Founders" title={<>The people who <span className="gold">started it</span></>} />
+            <Reveal stagger className="founders-grid">{founders.map((f) => <FacultyCard key={f.name} f={f} />)}</Reveal>
+          </div>
+        </section>
+      )}
+
       <section className="section section-cream">
         <div className="container">
           <SectionHead center eyebrow="What we stand for" title={<>Our <span className="tag">values</span></>} />
@@ -57,7 +70,7 @@ export default async function AboutPage() {
       <section className="section">
         <div className="container">
           <SectionHead eyebrow="Faculty" title={<>The <span className="tag">team</span></>} />
-          <Reveal stagger className="faculty-grid">{faculty.map((f) => <FacultyCard key={f.name} f={f} />)}</Reveal>
+          <Reveal stagger className="faculty-grid">{team.map((f) => <FacultyCard key={f.name} f={f} />)}</Reveal>
         </div>
       </section>
       <CtaBand />
