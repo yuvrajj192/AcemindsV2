@@ -107,7 +107,9 @@ async function sendEnquiryAlert(e: {
           name: e.name,
           phone: e.phone,
           student_class: e.studentClass,
-          email: e.email || "—",
+          // must be "" (not "—") when missing: the template's Reply-To uses {{email}}
+          // and Outlook rejects participants without a valid address (412).
+          email: e.email || "",
           course: e.course || "—",
           source: e.source,
           message: e.message || "—",
