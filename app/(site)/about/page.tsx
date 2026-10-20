@@ -7,6 +7,7 @@ import { CtaBand, PageHero, SectionHead } from "@/components/Sections";
 import { getFaculty, getSiteSettings } from "@/lib/queries";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/about" },
   title: "About · An IIT Alumni Initiative",
   description: "The story, mission and teaching method behind Ace Minds Private Tutorials, an IIT alumni initiative.",
 };

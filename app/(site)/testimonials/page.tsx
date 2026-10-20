@@ -6,6 +6,7 @@ import { CtaBand, PageHero, SectionHead } from "@/components/Sections";
 import { getLetters, getReviewSummary, getReviews, getVideoStories } from "@/lib/queries";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/testimonials" },
   title: "Testimonials · Students & Parents",
   description: "What Ace Minds students and parents say — video stories, handwritten notes and Google reviews.",
 };

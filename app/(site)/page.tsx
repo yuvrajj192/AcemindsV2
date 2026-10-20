@@ -14,6 +14,8 @@ import {
 
 const lectureUrl = "https://www.youtube.com/embed/videoseries?list=PLACEHOLDER";
 
+export const metadata = { alternates: { canonical: "/" } };
+
 /* Static marketing strip — not admin-managed. */
 const pillars: Pillar[] = [
   { icon: "target", title: "Personal Attention", text: "Max 30 per batch" },

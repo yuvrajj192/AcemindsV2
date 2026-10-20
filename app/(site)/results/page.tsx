@@ -5,6 +5,7 @@ import { CtaBand, PageHero, SectionHead } from "@/components/Sections";
 import { getCategories, getResultStats, getToppers, getVideoStories } from "@/lib/queries";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/results" },
   title: "Results & Toppers — JEE, NEET, MHT-CET & Boards",
   description: "Ace Minds toppers in JEE Advanced, JEE Main, NEET, MHT-CET and Board exams, year by year.",
 };

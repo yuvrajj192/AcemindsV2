@@ -6,6 +6,7 @@ import { CtaBand, PageHero, SectionHead } from "@/components/Sections";
 import { getFaculty } from "@/lib/queries";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/faculty" },
   title: "Faculty · IIT, NIT & AIIMS Alumni Mentors",
   description: "Meet the Ace Minds faculty — IIT, NIT and AIIMS alumni led by Deepak Rana Sir (Physics, IIT Bombay).",
 };

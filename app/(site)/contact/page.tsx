@@ -6,6 +6,7 @@ import { CtaBand, PageHero } from "@/components/Sections";
 import { getCourses, getSiteSettings } from "@/lib/queries";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/contact" },
   title: "Contact · Visit, Call or WhatsApp",
   description: "Get in touch with Ace Minds Private Tutorials — address, phone, WhatsApp and enquiry form.",
 };

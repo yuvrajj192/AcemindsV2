@@ -5,6 +5,7 @@ import { CtaBand, PageHero, SectionHead } from "@/components/Sections";
 import { getCourses } from "@/lib/queries";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/admissions" },
   title: "Admissions 2026–28 · Process & Free Counselling",
   description: "Admission process and free academic counselling at Ace Minds.",
 };

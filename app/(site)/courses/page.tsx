@@ -5,6 +5,7 @@ import { CtaBand, PageHero, SectionHead } from "@/components/Sections";
 import { getCategories, getCourses, getFaqs } from "@/lib/queries";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/courses" },
   title: "Courses · IIT-JEE, NEET, MHT-CET, Boards & Foundation",
   description: "Compare Ace Minds programs for IIT-JEE, NEET, MHT-CET, Class 11–12 Boards and Foundation (Class 8–10). Small batches, weekly tests, IIT alumni faculty.",
 };

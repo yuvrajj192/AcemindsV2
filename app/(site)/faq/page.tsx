@@ -6,6 +6,7 @@ import { CtaBand, PageHero } from "@/components/Sections";
 import { getFaqs } from "@/lib/queries";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/faq" },
   title: "FAQ · Frequently Asked Questions",
   description:
     "Answers to the questions parents ask Ace Minds most — batches, fees, demo classes, timings, faculty and results.",
@@ -13,6 +14,15 @@ export const metadata: Metadata = {
 
 export default async function FaqPage() {
   const faqs = await getFaqs();
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() },
+    })),
+  };
   return (
     <>
       <PageHero
@@ -43,6 +53,7 @@ export default async function FaqPage() {
       </section>
 
       <CtaBand />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
     </>
   );
 }

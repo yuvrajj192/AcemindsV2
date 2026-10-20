@@ -4,6 +4,7 @@ import { CtaBand, PageHero } from "@/components/Sections";
 import { getPublishedPosts } from "@/lib/queries";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/blog" },
   title: "Blog & Exam News · JEE, NEET, CET Updates",
   description: "Exam dates, strategy, concept explainers and topper routines from the Ace Minds faculty.",
 };

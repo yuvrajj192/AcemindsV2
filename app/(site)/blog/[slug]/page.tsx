@@ -19,7 +19,22 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const p = await getPostBySlug(slug);
-  return p ? { title: p.title, description: p.excerpt } : {};
+  if (!p) return {};
+  const url = `/blog/${slug}`;
+  return {
+    title: p.title,
+    description: p.excerpt,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      url,
+      siteName: "Ace Minds",
+      locale: "en_IN",
+      title: p.title,
+      description: p.excerpt,
+      images: [{ url: p.img ?? "/img/lectures/equation-of-trajectory.webp" }],
+    },
+  };
 }
 
 export default async function PostPage({ params }: Props) {

@@ -15,13 +15,31 @@ export const metadata: Metadata = {
   },
   description:
     "Ace Minds Private Tutorials — an IIT alumni initiative. Small batches, concept-first teaching and weekly tests for IIT-JEE, NEET, MHT-CET, Boards and Foundation (Class 8–10).",
+  keywords: [
+    "IIT-JEE coaching",
+    "NEET coaching",
+    "MHT-CET coaching",
+    "CBSE boards tuition",
+    "foundation classes class 8 9 10",
+    "small batch coaching",
+    "IIT alumni faculty",
+    "Ace Minds",
+  ],
   icons: { icon: "/img/favicon.svg" },
   openGraph: {
+    locale: "en_IN",
+    alternateLocale: "en_US",
     title: "Ace Minds — Learn from IITians. Rank higher.",
     description: "Small batches, IIT alumni mentors and weekly tests for JEE, NEET, CET & Boards.",
     images: ["/img/lectures/equation-of-trajectory.webp"],
     siteName: "Ace Minds",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ace Minds — Learn from IITians. Rank higher.",
+    description: "Small batches, IIT alumni mentors and weekly tests for JEE, NEET, CET & Boards.",
+    images: ["/img/lectures/equation-of-trajectory.webp"],
   },
 };
 
