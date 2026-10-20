@@ -36,7 +36,11 @@ export default async function EnquiryDetailPage({ params }: { params: Promise<{ 
         </p>
         <div className="eq-bar-actions">
           <EnquiryStatus id={row.id} status={row.status} />
-          <DeleteButton action={deleteEnquiry.bind(null, row.id)} confirmText="Delete this lead?" />
+          <DeleteButton
+            action={deleteEnquiry.bind(null, row.id)}
+            confirmText="Delete this lead?"
+            redirect="/admin/enquiries"
+          />
         </div>
       </div>
 
