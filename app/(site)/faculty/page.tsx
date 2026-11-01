@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { FacultyCard } from "@/components/Cards";
 import { Reveal } from "@/components/Reveal";
 import { CtaBand, PageHero, SectionHead } from "@/components/Sections";
@@ -17,10 +16,7 @@ export default async function FacultyPage() {
     <>
       <PageHero crumb="Faculty" title={<>Mentors who <span className="gold">cracked it first</span></>} text="Every core subject at Ace Minds is taught by alumni of India's top institutes — people who know the exam from the inside." big="IIT" hand="an alumni initiative" />
       <section className="section">
-        <div className="container why-grid">
-          <Reveal className="why-photo">
-            <div className="frame"><Image src="/about.jpeg" alt="The founders of Ace Minds" fill sizes="(max-width: 1024px) 90vw, 470px" /></div>
-          </Reveal>
+        <div className="container">
           <Reveal>
             <span className="eyebrow">Founder&apos;s desk</span>
             <h2 className="display section-title">Physics is not hard. <span className="tag">It&apos;s badly taught.</span></h2>
