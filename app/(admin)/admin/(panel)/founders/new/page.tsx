@@ -1,5 +1,5 @@
-import { FacultyForm } from "../../faculty/FacultyForm";
+import { FounderForm } from "../FounderForm";
 
 export default function NewFounderPage() {
-  return <FacultyForm initial={null} founder />;
+  return <FounderForm initial={null} />;
 }

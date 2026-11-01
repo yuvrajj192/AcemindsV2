@@ -4,7 +4,7 @@ import { FacultyCard } from "@/components/Cards";
 import { Icon } from "@/components/Icons";
 import { Reveal } from "@/components/Reveal";
 import { CtaBand, PageHero, SectionHead } from "@/components/Sections";
-import { getFaculty, getSiteSettings } from "@/lib/queries";
+import { getFaculty, getFounders, getSiteSettings } from "@/lib/queries";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/about" },
@@ -13,9 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const [site, faculty] = await Promise.all([getSiteSettings(), getFaculty()]);
-  const founders = faculty.filter((f) => f.founder);
-  const team = faculty.filter((f) => !f.founder);
+  const [site, founders, team] = await Promise.all([getSiteSettings(), getFounders(), getFaculty()]);
   return (
     <>
       <PageHero crumb="About" title={<>An <span className="gold">IIT alumni</span> initiative</>} text="We started Ace Minds to give students the kind of teaching we wished we had — clear, patient and relentlessly concept-first." big="AM" hand={`since ${site.founded}`} />

@@ -2,16 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { asc, eq } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
-import { deleteFaculty } from "@/lib/actions/faculty";
+import { deleteFounder } from "@/lib/actions/founders";
 import { DeleteButton } from "@/components/admin/DeleteButton";
 
 export const metadata: Metadata = { title: "Founders", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function FoundersAdminPage() {
-  const rows = await db.query.faculty.findMany({
-    where: eq(schema.faculty.isFounder, true),
-    orderBy: [asc(schema.faculty.sortOrder), asc(schema.faculty.name)],
+  const rows = await db.query.founders.findMany({
+    orderBy: [asc(schema.founders.sortOrder), asc(schema.founders.name)],
     with: { photo: true },
   });
   return (
@@ -57,10 +56,7 @@ export default async function FoundersAdminPage() {
                 <Link className="btn-s" href={`/admin/founders/${f.id}`}>
                   Edit
                 </Link>
-                <DeleteButton
-                  action={deleteFaculty.bind(null, f.id)}
-                  confirmText="Delete this founder? (They will also be removed from the team — delete permanently only if they should vanish from the site entirely.)"
-                />
+                <DeleteButton action={deleteFounder.bind(null, f.id)} confirmText="Delete this founder?" />
               </td>
             </tr>
           ))}

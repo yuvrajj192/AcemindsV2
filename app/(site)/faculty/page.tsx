@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { FacultyCard } from "@/components/Cards";
 import { Reveal } from "@/components/Reveal";
 import { CtaBand, PageHero, SectionHead } from "@/components/Sections";
-import { getFaculty } from "@/lib/queries";
+import { getFaculty, getFounders } from "@/lib/queries";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/faculty" },
@@ -11,12 +12,17 @@ export const metadata: Metadata = {
 };
 
 export default async function FacultyPage() {
-  const faculty = await getFaculty();
+  const [founders, team] = await Promise.all([getFounders(), getFaculty()]);
+  /* founders stay in the grid (physics first) but without their photo — photos live on the About page founders card */
+  const people = [...founders.map((f) => ({ ...f, img: undefined })), ...team];
   return (
     <>
       <PageHero crumb="Faculty" title={<>Mentors who <span className="gold">cracked it first</span></>} text="Every core subject at Ace Minds is taught by alumni of India's top institutes — people who know the exam from the inside." big="IIT" hand="an alumni initiative" />
       <section className="section">
-        <div className="container">
+        <div className="container why-grid">
+          <Reveal className="why-photo">
+            <div className="frame"><Image src="/about.jpeg" alt="The founders of Ace Minds" fill sizes="(max-width: 1024px) 90vw, 470px" /></div>
+          </Reveal>
           <Reveal>
             <span className="eyebrow">Founder&apos;s desk</span>
             <h2 className="display section-title">Physics is not hard. <span className="tag">It&apos;s badly taught.</span></h2>
@@ -32,7 +38,7 @@ export default async function FacultyPage() {
       <section className="section section-cream">
         <div className="container">
           <SectionHead eyebrow="The team" title={<>Our <span className="tag">faculty</span></>} />
-          <Reveal stagger className="faculty-grid">{faculty.map((f) => <FacultyCard key={f.name} f={f} />)}</Reveal>
+          <Reveal stagger className="faculty-grid">{people.map((f) => <FacultyCard key={f.name} f={f} />)}</Reveal>
         </div>
       </section>
       <CtaBand />

@@ -5,7 +5,7 @@ import { asc, desc, eq } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 import { formatDate, timeAgo } from "@/lib/utils";
 import type {
-  Category, Course, Faculty, Faq, Letter, Notice, Post, Poster, Review, ReviewSummary, SiteInfo, Slide, Stat, Topper, VideoStory,
+  Category, Course, Faculty, Founder, Faq, Letter, Notice, Post, Poster, Review, ReviewSummary, SiteInfo, Slide, Stat, Topper, VideoStory,
 } from "@/lib/types";
 
 /* One hour fallback; admin mutations call revalidateTag with these keys. */
@@ -20,6 +20,7 @@ const TAGS = {
   letters: "letters",
   reviews: "reviews",
   faculty: "faculty",
+  founders: "founders",
   posters: "posters",
   faqs: "faqs",
   notices: "notices",
@@ -189,7 +190,7 @@ export const getFaculty = () =>
       const rows = await db.query.faculty.findMany({
         where: eq(schema.faculty.published, true),
         with: { photo: true },
-        orderBy: [desc(schema.faculty.isFounder), asc(schema.faculty.sortOrder), asc(schema.faculty.name)],
+        orderBy: [asc(schema.faculty.sortOrder), asc(schema.faculty.name)],
       });
       return rows.map((r) => ({
         name: r.name,
@@ -200,11 +201,33 @@ export const getFaculty = () =>
         img: r.photo?.url,
         tags: r.tags ?? [],
         bio: r.bio,
-        founder: r.isFounder,
       }));
     },
     ["faculty"],
     { tags: [TAGS.faculty], revalidate: REVALIDATE }
+  )();
+
+export const getFounders = () =>
+  unstable_cache(
+    async (): Promise<Founder[]> => {
+      const rows = await db.query.founders.findMany({
+        where: eq(schema.founders.published, true),
+        with: { photo: true },
+        orderBy: [asc(schema.founders.sortOrder), asc(schema.founders.name)],
+      });
+      return rows.map((r) => ({
+        name: r.name,
+        role: r.role,
+        edu: r.edu,
+        exp: r.exp,
+        subject: r.subject,
+        img: r.photo?.url,
+        tags: r.tags ?? [],
+        bio: r.bio,
+      }));
+    },
+    ["founders"],
+    { tags: [TAGS.founders], revalidate: REVALIDATE }
   )();
 
 export const getPosters = () =>

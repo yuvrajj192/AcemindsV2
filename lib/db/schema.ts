@@ -138,7 +138,23 @@ export const faculty = pgTable("faculty", {
   mediaId: uuid("media_id").references(() => media.id, { onDelete: "set null" }),
   tags: text("tags").array().notNull().default([]),
   bio: text("bio").notNull(),
+  /* deprecated — founders live in their own table now; column kept so existing rows stay valid */
   isFounder: boolean("is_founder").notNull().default(false),
+  ...listMeta,
+  ...stamps,
+});
+
+/* Founders are a fully separate collection from faculty — own photo, own info. */
+export const founders = pgTable("founders", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  role: text("role").notNull(),
+  subject: text("subject").notNull().default(""),
+  edu: text("edu").notNull().default(""),
+  exp: text("exp").notNull().default(""),
+  mediaId: uuid("media_id").references(() => media.id, { onDelete: "set null" }),
+  tags: text("tags").array().notNull().default([]),
+  bio: text("bio").notNull().default(""),
   ...listMeta,
   ...stamps,
 });
@@ -267,6 +283,10 @@ export const slidesRelations = relations(slides, ({ one }) => ({
 
 export const facultyRelations = relations(faculty, ({ one }) => ({
   photo: one(media, { fields: [faculty.mediaId], references: [media.id] }),
+}));
+
+export const foundersRelations = relations(founders, ({ one }) => ({
+  photo: one(media, { fields: [founders.mediaId], references: [media.id] }),
 }));
 
 export const postsRelations = relations(posts, ({ one }) => ({

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { asc, eq } from "drizzle-orm";
+import { asc } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 import { deleteFaculty } from "@/lib/actions/faculty";
 import { DeleteButton } from "@/components/admin/DeleteButton";
@@ -10,7 +10,6 @@ export const dynamic = "force-dynamic";
 
 export default async function FacultyAdminPage() {
   const rows = await db.query.faculty.findMany({
-    where: eq(schema.faculty.isFounder, false),
     orderBy: [asc(schema.faculty.sortOrder), asc(schema.faculty.name)],
     with: { photo: true },
   });
@@ -18,8 +17,8 @@ export default async function FacultyAdminPage() {
     <div className="adm-list">
       <div className="adm-list__bar">
         <p>
-          {rows.length} member{rows.length === 1 ? "" : "s"} · shown in The team section on the About page (founders
-          are managed under <Link href="/admin/founders">Founders</Link>)
+          {rows.length} member{rows.length === 1 ? "" : "s"} · shown in The team section (founders are managed under{" "}
+          <Link href="/admin/founders">Founders</Link>)
         </p>
         <Link className="btn-gold btn-gold--sm" href="/admin/faculty/new">
           + Add faculty

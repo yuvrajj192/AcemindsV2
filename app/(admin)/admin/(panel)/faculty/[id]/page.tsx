@@ -23,7 +23,6 @@ export default async function EditFacultyPage({ params }: { params: Promise<{ id
         photoUrl: row.photo?.url ?? null,
         tags: row.tags,
         bio: row.bio,
-        isFounder: row.isFounder,
         sortOrder: row.sortOrder,
         published: row.published,
       }}
