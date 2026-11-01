@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { desc, eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 import { deleteFaculty } from "@/lib/actions/faculty";
 import { DeleteButton } from "@/components/admin/DeleteButton";
@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export default async function FacultyAdminPage() {
   const rows = await db.query.faculty.findMany({
     where: eq(schema.faculty.isFounder, false),
-    orderBy: desc(schema.faculty.sortOrder),
+    orderBy: [asc(schema.faculty.sortOrder), asc(schema.faculty.name)],
     with: { photo: true },
   });
   return (
