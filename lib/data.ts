@@ -147,12 +147,9 @@ export const ACE: SiteData = {
   ],
   reviewSummary: { rating: 4.9, count: 380 },
 
-  // Faculty (admin: Faculty) — only Deepak Sir has a real photo
+  // Faculty — managed entirely in admin (admin: Faculty / Founders). No hardcoded entries.
   faculty: [
-    { name: "Deepak Rana", role: "Physics Mentor · Founder", edu: "IIT Bombay alumnus", exp: "10+ yrs", subject: "Physics", img: "/img/faculty/deepak-rana.webp", tags: ["JEE Adv", "NEET", "Mechanics"], bio: "Known for 'Physics Made Simple' — every formula derived from first principles, every concept tied to a picture." },
-    { name: "Chemistry Faculty", role: "Chemistry Mentor", edu: "IIT alumnus", exp: "8+ yrs", subject: "Chemistry", tags: ["Organic", "JEE", "NEET"], bio: "Reaction mechanisms taught as stories, not lists — with weekly reaction-map revisions." },
-    { name: "Maths Faculty", role: "Mathematics Mentor", edu: "NIT alumnus", exp: "9+ yrs", subject: "Maths", tags: ["Calculus", "JEE Adv", "CET"], bio: "Builds problem-solving speed through pattern drills and timed sprint sessions." },
-    { name: "Biology Faculty", role: "Biology Mentor", edu: "MBBS · AIIMS", exp: "7+ yrs", subject: "Biology", tags: ["NEET", "NCERT", "Botany"], bio: "NCERT line-by-line approach with diagrams and mnemonics that stick till exam day." }
+    { name: "Deepak Rana", role: "Physics Mentor · Founder", edu: "IIT Bombay alumnus", exp: "10+ yrs", subject: "Physics", img: "/img/faculty/deepak-rana.webp", tags: ["JEE Adv", "NEET", "Mechanics"], bio: "Known for 'Physics Made Simple' — every formula derived from first principles, every concept tied to a picture." }
   ],
 
   // Hero feature strip
