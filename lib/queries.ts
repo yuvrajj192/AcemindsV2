@@ -201,6 +201,7 @@ export const getFaculty = () =>
         img: r.photo?.url,
         tags: r.tags ?? [],
         bio: r.bio,
+        founder: r.isFounder,
       }));
     },
     ["faculty"],

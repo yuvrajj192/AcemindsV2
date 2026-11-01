@@ -138,7 +138,7 @@ export const faculty = pgTable("faculty", {
   mediaId: uuid("media_id").references(() => media.id, { onDelete: "set null" }),
   tags: text("tags").array().notNull().default([]),
   bio: text("bio").notNull(),
-  /* deprecated — founders live in their own table now; column kept so existing rows stay valid */
+  /* local display flag: ★ in admin, hidden from “The team” on About — NOT linked to the founders collection */
   isFounder: boolean("is_founder").notNull().default(false),
   ...listMeta,
   ...stamps,

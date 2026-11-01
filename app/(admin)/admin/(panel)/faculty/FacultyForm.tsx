@@ -17,6 +17,7 @@ type FacultyRow = {
   photoUrl: string | null;
   tags: string[];
   bio: string;
+  isFounder: boolean;
   sortOrder: number;
   published: boolean;
 };
@@ -86,10 +87,16 @@ export function FacultyForm({ initial }: { initial: FacultyRow | null }) {
         <div className="frm__field">
           <span className="frm__checks">
             <label>
+              <input name="isFounder" type="checkbox" defaultChecked={initial?.isFounder} /> ★ Founder
+            </label>
+            <label>
               <input name="published" type="checkbox" defaultChecked={initial ? initial.published : true} /> Published
             </label>
           </span>
-          <small>Team members show under “The team” on the About page and the faculty pages.</small>
+          <small>
+            Marks this person as a founder here in the Faculty list. The About page Founders section (with photos) is a
+            separate collection — managed only under Founders.
+          </small>
         </div>
         <div className="frm__field frm__field--full">
           <ImagePicker value={img} onChange={setImg} label="Photo" aspect={4 / 4.4} aspectLabel="4:4.4 portrait" />

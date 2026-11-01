@@ -13,7 +13,9 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const [site, founders, team] = await Promise.all([getSiteSettings(), getFounders(), getFaculty()]);
+  /* About Founders section reads ONLY the founders collection — faculty edits never touch it */
+  const [site, founders, faculty] = await Promise.all([getSiteSettings(), getFounders(), getFaculty()]);
+  const team = faculty.filter((f) => !f.founder);
   return (
     <>
       <PageHero crumb="About" title={<>An <span className="gold">IIT alumni</span> initiative</>} text="We started Ace Minds to give students the kind of teaching we wished we had — clear, patient and relentlessly concept-first." big="AM" hand={`since ${site.founded}`} />

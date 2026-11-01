@@ -3,7 +3,7 @@ import Image from "next/image";
 import { FacultyCard } from "@/components/Cards";
 import { Reveal } from "@/components/Reveal";
 import { CtaBand, PageHero, SectionHead } from "@/components/Sections";
-import { getFaculty, getFounders } from "@/lib/queries";
+import { getFaculty } from "@/lib/queries";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/faculty" },
@@ -12,9 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function FacultyPage() {
-  const [founders, team] = await Promise.all([getFounders(), getFaculty()]);
-  /* founders stay in the grid (physics first) but without their photo — photos live on the About page founders card */
-  const people = [...founders.map((f) => ({ ...f, img: undefined })), ...team];
+  const faculty = await getFaculty();
   return (
     <>
       <PageHero crumb="Faculty" title={<>Mentors who <span className="gold">cracked it first</span></>} text="Every core subject at Ace Minds is taught by alumni of India's top institutes — people who know the exam from the inside." big="IIT" hand="an alumni initiative" />
@@ -38,7 +36,7 @@ export default async function FacultyPage() {
       <section className="section section-cream">
         <div className="container">
           <SectionHead eyebrow="The team" title={<>Our <span className="tag">faculty</span></>} />
-          <Reveal stagger className="faculty-grid">{people.map((f) => <FacultyCard key={f.name} f={f} />)}</Reveal>
+          <Reveal stagger className="faculty-grid">{faculty.map((f) => <FacultyCard key={f.name} f={f} />)}</Reveal>
         </div>
       </section>
       <CtaBand />

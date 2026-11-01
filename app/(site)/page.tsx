@@ -8,7 +8,7 @@ import { FacultyCard, LetterCard, PostCard, PosterCard, ReviewCard, ReviewSummar
 import { Accordion, CourseExplorer, CourseFinder, HeroSlider, StoryCard, ToppersSlider, Trajectory } from "@/components/Interactive";
 import { ArrowLink, SectionHead } from "@/components/Sections";
 import {
-  getCourses, getFaculty, getFounders, getFaqs, getLetters, getPosters, getPublishedPosts, getReviewSummary, getReviews,
+  getCourses, getFaculty, getFaqs, getLetters, getPosters, getPublishedPosts, getReviewSummary, getReviews,
   getResultStats, getSiteSettings, getSlides, getToppers, getVideoStories, getCategories,
 } from "@/lib/queries";
 
@@ -27,14 +27,12 @@ const pillars: Pillar[] = [
 export default async function Home() {
   const [
     S, categories, courses, toppers, resultStats, slides, videoStories, letters, reviews,
-    reviewSummary, founders, team, posters, faqs, posts,
+    reviewSummary, faculty, posters, faqs, posts,
   ] = await Promise.all([
     getSiteSettings(), getCategories(), getCourses(), getToppers(), getResultStats(), getSlides(),
-    getVideoStories(), getLetters(), getReviews(), getReviewSummary(), getFounders(), getFaculty(), getPosters(),
+    getVideoStories(), getLetters(), getReviews(), getReviewSummary(), getFaculty(), getPosters(),
     getFaqs(), getPublishedPosts(),
   ]);
-  /* founders lead the grid (physics first) without their photo — pfp lives on the About page founders card */
-  const faculty = [...founders.map((f) => ({ ...f, img: undefined })), ...team];
   return (
     <>
       {/* ================= HERO ================= */}

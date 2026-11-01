@@ -39,6 +39,7 @@ export async function saveFaculty(fd: FormData): Promise<SaveResult> {
         .map((t) => t.trim())
         .filter(Boolean),
       bio: text(fd, "bio"),
+      isFounder: fd.get("isFounder") === "on",
       sortOrder: Number(fd.get("sortOrder") || 0),
       published: fd.get("published") === "on",
     };
