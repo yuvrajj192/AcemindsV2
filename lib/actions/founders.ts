@@ -52,6 +52,7 @@ export async function saveFounder(fd: FormData): Promise<SaveResult> {
     }
     updateTag("founders");
     revalidatePath("/admin/founders");
+    revalidatePath("/admin/faculty");
     return { ok: true, id: savedId };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "Save failed." };
@@ -63,4 +64,5 @@ export async function deleteFounder(id: string): Promise<void> {
   await db.delete(schema.founders).where(eq(schema.founders.id, id));
   updateTag("founders");
   revalidatePath("/admin/founders");
+  revalidatePath("/admin/faculty");
 }
