@@ -23,7 +23,6 @@ export default async function EditTopperPage({ params }: { params: Promise<{ id:
         catId: row.catId,
         mediaId: row.mediaId,
         photoUrl: row.photo?.url ?? null,
-        sortOrder: row.sortOrder,
         published: row.published,
       }}
       categories={categories.map((c) => ({ id: c.id, label: c.label }))}

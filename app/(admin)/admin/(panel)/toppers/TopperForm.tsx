@@ -19,7 +19,6 @@ type TopperRow = {
   catId: string;
   mediaId: string | null;
   photoUrl: string | null;
-  sortOrder: number;
   published: boolean;
 };
 
@@ -83,10 +82,6 @@ export function TopperForm({ initial, categories }: { initial: TopperRow | null;
               </option>
             ))}
           </select>
-        </label>
-        <label className="frm__field">
-          <span>Sort order</span>
-          <input name="sortOrder" type="number" defaultValue={initial?.sortOrder ?? 0} />
         </label>
         <div className="frm__field frm__field--full">
           <span className="frm__checks">

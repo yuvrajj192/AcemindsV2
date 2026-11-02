@@ -18,7 +18,6 @@ type FacultyRow = {
   tags: string[];
   bio: string;
   isFounder: boolean;
-  sortOrder: number;
   published: boolean;
 };
 
@@ -79,10 +78,6 @@ export function FacultyForm({ initial }: { initial: FacultyRow | null }) {
         <label className="frm__field frm__field--full">
           <span>Bio</span>
           <textarea name="bio" rows={4} defaultValue={initial?.bio} />
-        </label>
-        <label className="frm__field">
-          <span>Sort order</span>
-          <input name="sortOrder" type="number" defaultValue={initial?.sortOrder ?? 0} />
         </label>
         <div className="frm__field">
           <span className="frm__checks">

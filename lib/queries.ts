@@ -89,7 +89,7 @@ export const getToppers = () =>
       const rows = await db.query.toppers.findMany({
         where: eq(schema.toppers.published, true),
         with: { photo: true },
-        orderBy: [desc(schema.toppers.year), asc(schema.toppers.sortOrder), asc(schema.toppers.name)],
+        orderBy: [asc(schema.toppers.sortOrder), asc(schema.toppers.name)],
       });
       return rows.map((r) => ({
         name: r.name,

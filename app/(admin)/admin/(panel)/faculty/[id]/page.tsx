@@ -24,7 +24,6 @@ export default async function EditFacultyPage({ params }: { params: Promise<{ id
         tags: row.tags,
         bio: row.bio,
         isFounder: row.isFounder,
-        sortOrder: row.sortOrder,
         published: row.published,
       }}
     />
