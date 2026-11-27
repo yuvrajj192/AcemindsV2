@@ -13,10 +13,13 @@ export async function getAdminPostCategories(): Promise<string[]> {
 
 export type TrafficStats = {
   today: number;
+  yesterday: number;
   week: number;
   prevWeek: number;
   month: number;
   uniquesWeek: number;
+  uniquesMonth: number;
+  directMonth: number;
   series: { day: string; views: number; uniques: number }[];
   topPaths: { path: string; views: number }[];
   topReferrers: { referrer: string; views: number }[];
@@ -27,10 +30,14 @@ export async function getTrafficStats(): Promise<TrafficStats> {
     db.execute(sql`
       select
         count(*) filter (where created_at >= date_trunc('day', now())) as today,
+        count(*) filter (where created_at >= date_trunc('day', now()) - interval '1 day'
+                          and created_at < date_trunc('day', now())) as yesterday,
         count(*) filter (where created_at >= now() - interval '7 days') as week,
         count(*) filter (where created_at >= now() - interval '14 days' and created_at < now() - interval '7 days') as prev_week,
         count(*) filter (where created_at >= now() - interval '30 days') as month,
-        count(distinct visitor) filter (where created_at >= now() - interval '7 days') as uniques_week
+        count(distinct visitor) filter (where created_at >= now() - interval '7 days') as uniques_week,
+        count(distinct visitor) filter (where created_at >= now() - interval '30 days') as uniques_month,
+        count(*) filter (where created_at >= now() - interval '30 days' and referrer = '') as direct_month
       from page_views
     `),
     db.execute(sql`
@@ -38,7 +45,7 @@ export async function getTrafficStats(): Promise<TrafficStats> {
              count(*) as views,
              count(distinct visitor) as uniques
       from page_views
-      where created_at >= date_trunc('day', now()) - interval '13 days'
+      where created_at >= date_trunc('day', now()) - interval '29 days'
       group by 1 order by 1
     `),
     db.execute(sql`
@@ -57,24 +64,27 @@ export async function getTrafficStats(): Promise<TrafficStats> {
 
   const t = (totalsRes.rows[0] ?? {}) as Record<string, unknown>;
 
-  // zero-fill the 14-day window
+  // zero-fill the 30-day window (UTC keys — the DB groups days in GMT,
+  // and local-date keys shift bars by one day during IST night hours)
   const byDay = new Map<string, { views: number; uniques: number }>();
   for (const r of seriesRes.rows as { day: string; views: unknown; uniques: unknown }[]) {
     byDay.set(r.day, { views: Number(r.views), uniques: Number(r.uniques) });
   }
   const series: TrafficStats["series"] = [];
-  for (let i = 13; i >= 0; i--) {
-    const d = new Date(Date.now() - i * 86400000);
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  for (let i = 29; i >= 0; i--) {
+    const key = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
     series.push({ day: key, views: byDay.get(key)?.views ?? 0, uniques: byDay.get(key)?.uniques ?? 0 });
   }
 
   return {
     today: Number(t.today ?? 0),
+    yesterday: Number(t.yesterday ?? 0),
     week: Number(t.week ?? 0),
     prevWeek: Number(t.prev_week ?? 0),
     month: Number(t.month ?? 0),
     uniquesWeek: Number(t.uniques_week ?? 0),
+    uniquesMonth: Number(t.uniques_month ?? 0),
+    directMonth: Number(t.direct_month ?? 0),
     series,
     topPaths: (pathsRes.rows as { path: string; views: unknown }[]).map((r) => ({
       path: r.path,
@@ -132,13 +142,14 @@ export async function getEnquiryCounts() {
   return out;
 }
 
-/** Dashboard lead-gen numbers: today / 7d / prev-7d / still-new. */
+/** Dashboard lead-gen numbers: today / yesterday / 7d / prev-7d / 30d / still-new. */
 export async function getEnquiryStats() {
   const res = await db.execute(sql`
     select
       count(*) filter (where created_at >= date_trunc('day', now())) as today,
       count(*) filter (where created_at >= now() - interval '7 days') as week,
       count(*) filter (where created_at >= now() - interval '7 days' and created_at < now() - interval '14 days') as prev_week,
+      count(*) filter (where created_at >= now() - interval '30 days') as month,
       count(*) filter (where status = 'new') as unread
     from enquiries`);
   const r = (res.rows[0] ?? {}) as Record<string, unknown>;
@@ -146,6 +157,7 @@ export async function getEnquiryStats() {
     today: Number(r.today ?? 0),
     week: Number(r.week ?? 0),
     prevWeek: Number(r.prev_week ?? 0),
+    month: Number(r.month ?? 0),
     unread: Number(r.unread ?? 0),
   };
 }

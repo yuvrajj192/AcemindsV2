@@ -63,17 +63,27 @@ const TILES: {
 ];
 
 function dayLabel(day: string): string {
+  if (!day) return "";
   const d = new Date(`${day}T12:00:00Z`);
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 }
 
-function delta(week: number, prev: number): { text: string; cls: string } {
-  if (!prev && !week) return { text: "no traffic yet", cls: "is-flat" };
-  if (!prev) return { text: "new traffic", cls: "is-up" };
-  const pct = Math.round(((week - prev) / prev) * 100);
-  if (pct > 0) return { text: `▲ ${pct}% vs last week`, cls: "is-up" };
-  if (pct < 0) return { text: `▼ ${Math.abs(pct)}% vs last week`, cls: "is-down" };
-  return { text: "— level vs last week", cls: "is-flat" };
+/**
+ * Period-over-period change that never lies. A % on a tiny base (1 → 261 views
+ * = "26000%") looks broken, so a percentage is only quoted when the previous
+ * period can carry it (≥10 and the change is within 4×); otherwise the raw
+ * numbers are shown — "+260 vs last week (was 1)".
+ */
+function delta(cur: number, prev: number, period: string, noun: string): { text: string; cls: string } {
+  if (!cur && !prev) return { text: `no ${noun} yet`, cls: "is-flat" };
+  const diff = cur - prev;
+  if (diff === 0) return { text: `level ${period}`, cls: "is-flat" };
+  const cls = diff > 0 ? "is-up" : "is-down";
+  const sign = diff > 0 ? "▲" : "▼";
+  if (prev >= 10 && Math.abs(diff) <= prev * 4) {
+    return { text: `${sign} ${Math.round((Math.abs(diff) / prev) * 100)}% ${period}`, cls };
+  }
+  return { text: `${sign} ${diff > 0 ? "+" : ""}${diff} ${period} (was ${prev})`, cls };
 }
 
 function greeting(h: number): string {
@@ -84,11 +94,18 @@ function greeting(h: number): string {
 
 export default async function AdminDashboard() {
   const [c, t, s] = await Promise.all([counts(), getTrafficStats(), getEnquiryStats()]);
-  const d = delta(t.week, t.prevWeek);
-  const ld = delta(s.week, s.prevWeek);
+  const d = delta(t.week, t.prevWeek, "vs last week", "views");
+  const yd = delta(t.today, t.yesterday, "vs yesterday", "views");
+  const ld = delta(s.week, s.prevWeek, "vs last week", "leads");
   const maxDay = Math.max(1, ...t.series.map((s) => s.views));
   const maxPath = Math.max(1, ...t.topPaths.map((p) => p.views));
-  const maxRef = Math.max(1, ...t.topReferrers.map((r) => r.views));
+  /* direct (no-referrer) visits are real traffic — include them so the panel never lies */
+  const refRows = [
+    ...(t.directMonth > 0 ? [{ referrer: "Direct / no referrer", views: t.directMonth }] : []),
+    ...t.topReferrers,
+  ].slice(0, 6);
+  const maxRef = Math.max(1, ...refRows.map((r) => r.views));
+  const avgDay = t.series.length ? Math.round(t.month / 30) : 0;
   const now = new Date();
   const dateStr = now.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
@@ -121,6 +138,7 @@ export default async function AdminDashboard() {
         <div className="dash__kpi" style={{ ["--accent" as string]: "#2e7bea" }}>
           <span>Views today</span>
           <strong>{t.today}</strong>
+          <em className={`dash__kpi-delta ${yd.cls}`}>{yd.text}</em>
         </div>
         <div className="dash__kpi" style={{ ["--accent" as string]: "#2e7bea" }}>
           <span>Views · 7 days</span>
@@ -130,11 +148,12 @@ export default async function AdminDashboard() {
         <div className="dash__kpi" style={{ ["--accent" as string]: "#7c5cff" }}>
           <span>Visitors · 7 days</span>
           <strong>{t.uniquesWeek}</strong>
-          <em className="dash__kpi-delta is-flat">unique visitors</em>
+          <em className="dash__kpi-delta is-flat">{t.uniquesMonth} in the last 30 days</em>
         </div>
         <div className="dash__kpi" style={{ ["--accent" as string]: "#0ea5b7" }}>
           <span>Views · 30 days</span>
           <strong>{t.month}</strong>
+          <em className="dash__kpi-delta is-flat">≈ {avgDay} / day</em>
         </div>
         <div className="dash__kpi dash__kpi--leads" style={{ ["--accent" as string]: "#e0a516" }}>
           <span>Leads · 7 days</span>
@@ -142,6 +161,11 @@ export default async function AdminDashboard() {
           <em className={`dash__kpi-delta ${s.unread ? "is-up" : ld.cls}`}>
             {s.unread ? `${s.unread} new in inbox` : ld.text}
           </em>
+        </div>
+        <div className="dash__kpi dash__kpi--leads" style={{ ["--accent" as string]: "#e0a516" }}>
+          <span>Leads · 30 days</span>
+          <strong>{s.month}</strong>
+          <em className="dash__kpi-delta is-flat">{c.enquiries} total in inbox</em>
         </div>
       </section>
 
@@ -155,9 +179,9 @@ export default async function AdminDashboard() {
           <div className="dash__panel dash__panel--chart">
             <div className="dash__panel-head">
               <h3>Daily views</h3>
-              <span>last 14 days</span>
+              <span>last 30 days</span>
             </div>
-            <div className="dash__chart" role="img" aria-label="Daily page views for the last 14 days">
+            <div className="dash__chart" role="img" aria-label="Daily page views for the last 30 days">
               {t.series.map((s, i) => (
                 <div className="dash__bar-col" key={s.day}>
                   <div
@@ -170,6 +194,7 @@ export default async function AdminDashboard() {
             </div>
             <div className="dash__chart-axis">
               <span>{dayLabel(t.series[0]?.day ?? "")}</span>
+              <span>{dayLabel(t.series[Math.floor(t.series.length / 2)]?.day ?? "")}</span>
               <span>{dayLabel(t.series[t.series.length - 1]?.day ?? "")}</span>
             </div>
           </div>
@@ -203,9 +228,9 @@ export default async function AdminDashboard() {
               <h3>Where visits come from</h3>
               <span>30 days</span>
             </div>
-            {t.topReferrers.length ? (
+            {refRows.length ? (
               <ul className="dash__rank">
-                {t.topReferrers.map((r) => (
+                {refRows.map((r) => (
                   <li key={r.referrer}>
                     <span className="dash__rank-name" title={r.referrer}>
                       {r.referrer}
@@ -218,8 +243,11 @@ export default async function AdminDashboard() {
                 ))}
               </ul>
             ) : (
-              <p className="dash__empty">Referral sources (Google, social, etc.) show up here after the first visits.</p>
+              <p className="dash__empty">No visits in the last 30 days yet — sources appear here as soon as traffic lands.</p>
             )}
+            {t.directMonth > 0 && t.directMonth === t.month ? (
+              <p className="dash__note-mini">All visits so far are direct — people typing the URL or using bookmarks. Google &amp; social referrals will be listed here once they arrive.</p>
+            ) : null}
           </div>
         </div>
       </section>

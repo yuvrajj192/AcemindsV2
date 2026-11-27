@@ -684,6 +684,15 @@ a.dash__chip:hover {
   color: var(--muted);
 }
 
+.dash__note-mini {
+  margin: 12px 0 0;
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--muted);
+  border-top: 1px dashed var(--line);
+  padding-top: 10px;
+}
+
 /* ---- content tiles ---- */
 
 .dash__content {
