@@ -602,7 +602,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .acc-item.open .pm::after { transform: translate(-50%, -50%) rotate(0); }
 .acc-a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s var(--ease); }
 .acc-a > div { overflow: hidden; }
-.acc-a p { padding: 0 22px 20px; margin: 0; color: var(--ink-soft); }
+.acc-a p { padding: 0 22px 20px; margin: 0; color: var(--ink-soft); white-space: pre-line; }
 .acc-item.open .acc-a { grid-template-rows: 1fr; }
 
 /* ---------- Blog ---------- */

@@ -35,8 +35,9 @@ export async function saveCourse(fd: FormData): Promise<SaveResult> {
       badge: text(fd, "badge") || null,
       hot: fd.get("hot") === "on",
       seats: Number(fd.get("seats") || 0),
+      /* one feature per line — bullets contain commas, so comma-splitting would shred them */
       features: text(fd, "features")
-        .split(",")
+        .split(/\r?\n/)
         .map((f) => f.trim())
         .filter(Boolean),
       sortOrder: Number(fd.get("sortOrder") || 0),

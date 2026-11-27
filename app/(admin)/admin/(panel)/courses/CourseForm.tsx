@@ -90,8 +90,13 @@ export function CourseForm({ initial, categories }: { initial: CourseRow | null;
           <input name="seats" type="number" defaultValue={initial?.seats ?? 0} />
         </label>
         <label className="frm__field frm__field--full">
-          <span>Features (comma separated)</span>
-          <input name="features" defaultValue={initial?.features.join(", ")} placeholder="Doubt desk, Mock tests, Mentorship" />
+          <span>Features (one per line)</span>
+          <textarea
+            name="features"
+            rows={6}
+            defaultValue={initial?.features.join("\n")}
+            placeholder={"Doubt desk\nMock tests\nMentorship"}
+          />
         </label>
         <label className="frm__field">
           <span>Sort order</span>
